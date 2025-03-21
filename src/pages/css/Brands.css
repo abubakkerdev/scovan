@@ -1,0 +1,32 @@
+.one {
+  width: 100%;
+}
+.main-box {
+  display: flex;
+  column-gap: 50px;
+}
+
+.Toastify {
+  background-color: transparent !important;
+}
+
+.convertColor {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  display: block;
+}
+.customFlex {
+  display: flex;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.imageControll {
+  display: flex;
+  padding-bottom: 5px;
+  column-gap: 10px;
+}
+.changeRow {
+  align-items: flex-end;
+}
