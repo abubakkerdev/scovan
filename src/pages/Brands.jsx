@@ -318,7 +318,6 @@ function Brands() {
                 <tbody>
                   {brands.length !== 0 ? (
                     brands.map((brand, index) => (
-                      <>
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>{brand.brandName}</td>
@@ -349,7 +348,6 @@ function Brands() {
                             </div>
                           </td>
                         </tr>
-                      </>
                     ))
                   ) : (
                     <tr>
@@ -363,7 +361,7 @@ function Brands() {
 
               <div
                 className="modal fade"
-                id="#exampleModal"
+                id="exampleModal"
                 aria-labelledby="exampleModalLabel"
                 aria-hidden="true"
               >
