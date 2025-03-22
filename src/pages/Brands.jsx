@@ -342,59 +342,13 @@ function Brands() {
                                 className="btn btn-danger"
                                 data-bs-toggle="modal"
                                 onClick={() => setId(brand)}
-                                data-bs-target={`#exampleModal${index + 1}`}
+                                data-bs-target="#exampleModal"
                               >
                                 Delete
                               </button>
                             </div>
                           </td>
                         </tr>
-
-                        <div
-                          className="modal fade"
-                          id={`#exampleModal${index + 1}`}
-                          aria-labelledby="exampleModalLabel"
-                          aria-hidden="true"
-                        >
-                          <div className="modal-dialog">
-                            <div className="modal-content">
-                              <div className="modal-header">
-                                <h5
-                                  className="modal-title"
-                                  id="exampleModalLabel"
-                                >
-                                  Are You Sure?
-                                </h5>
-                                <button
-                                  type="button"
-                                  className="btn-close"
-                                  data-bs-dismiss="modal"
-                                  aria-label="Close"
-                                ></button>
-                              </div>
-                              <div className="modal-body">
-                                <h4>Do you want to delete this User ?</h4>
-                              </div>
-                              <div className="modal-footer">
-                                <button
-                                  type="button"
-                                  className="btn btn-secondary"
-                                  data-bs-dismiss="modal"
-                                >
-                                  No
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={handleDelete}
-                                  data-bs-dismiss="modal"
-                                  className="btn btn-danger"
-                                >
-                                  Yes
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                       </>
                     ))
                   ) : (
@@ -406,6 +360,49 @@ function Brands() {
                   )}
                 </tbody>
               </table>
+
+              <div
+                className="modal fade"
+                id="#exampleModal"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+              >
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h5 className="modal-title" id="exampleModalLabel">
+                        Are You Sure?
+                      </h5>
+                      <button
+                        type="button"
+                        className="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <div className="modal-body">
+                      <h4>Do you want to delete this User ?</h4>
+                    </div>
+                    <div className="modal-footer">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                      >
+                        No
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        data-bs-dismiss="modal"
+                        className="btn btn-danger"
+                      >
+                        Yes
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
