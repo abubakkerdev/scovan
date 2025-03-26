@@ -41,38 +41,44 @@ function MainLayout() {
     {
       type: "divider",
     },
-    getItem("Tags", "sub3", <AppstoreOutlined />, [
+    getItem("SubCategory", "sub3", <UsergroupAddOutlined />, [
+      getItem("All Sub Category", "/subcategory"),
+    ]),
+    {
+      type: "divider",
+    },
+    getItem("Tags", "sub4", <AppstoreOutlined />, [
       getItem("All Tag", "/tags"),
     ]),
     {
       type: "divider",
     },
-    getItem("Capacity", "sub4", <AppstoreOutlined />, [
+    getItem("Capacity", "sub5", <AppstoreOutlined />, [
       getItem("All Capacity", "/capacity"),
     ]),
     {
       type: "divider",
     },
-    getItem("Color", "sub5", <AppstoreOutlined />, [
+    getItem("Color", "sub6", <AppstoreOutlined />, [
       getItem("All Color", "/color"),
     ]),
     {
       type: "divider",
     },
-    getItem("Products", "sub6", <AppstoreOutlined />, [
+    getItem("Products", "sub7", <AppstoreOutlined />, [
       getItem("Add Product", "/addproduct"),
       getItem("All Product", "/products"),
     ]),
     {
       type: "divider",
     },
-    getItem("Order", "sub7", <AppstoreOutlined />, [
+    getItem("Order", "sub8", <AppstoreOutlined />, [
       getItem("All Order", "/order"),
     ]),
     {
       type: "divider",
     },
-    getItem("Account", "sub8", <FiUser />, [
+    getItem("Account", "sub9", <FiUser />, [
       getItem("User Account", "/profile"),
       getItem("Logout", "12"),
     ]),
@@ -80,7 +86,7 @@ function MainLayout() {
       type: "divider",
     },
   ]);
-
+  
   const userAuth = useSelector((state) => state.userInfo.userData);
 
   useEffect(() => {
@@ -94,6 +100,7 @@ function MainLayout() {
   useEffect(() => {
     if (userAuth.role === "user") {
       setItems(items.slice(items.length - 2, items.length - 1));
+      navigate("/");
     }
   }, []);
 
@@ -108,7 +115,7 @@ function MainLayout() {
       navigate(e.key);
     }
 
-    if (e.keyPath[1] === "sub8") {
+    if (e.keyPath[1] === "sub9") {
       if (e.key === "12") {
         handleLogout();
       }

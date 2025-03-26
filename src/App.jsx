@@ -26,6 +26,7 @@ import Products from "./pages/Products";
 import EditProduct from "./pages/EditProduct";
 import ProductView from "./pages/ProductView";
 import Order from "./pages/Order";
+import SubCategory from "./pages/SubCategory";
 
 function App() {
   const router = createBrowserRouter(
@@ -37,6 +38,7 @@ function App() {
           <Route path="/category" element={<Categories />} />
           <Route path="/tags" element={<Tags />} />
           <Route path="/capacity" element={<Capacity />} />
+          <Route path="/subcategory" element={<SubCategory />} />
           <Route path="/color" element={<Color />} />
           <Route path="/addproduct" element={<Product />} />
           <Route path="/products" element={<Products />} />
