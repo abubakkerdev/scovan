@@ -25,6 +25,7 @@ import Product from "./pages/Product";
 import Products from "./pages/Products";
 import EditProduct from "./pages/EditProduct";
 import ProductView from "./pages/ProductView";
+import Order from "./pages/Order";
 
 function App() {
   const router = createBrowserRouter(
@@ -41,6 +42,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/product/edit/:id" element={<EditProduct />} />
           <Route path="/product/view/:id" element={<ProductView />} />
+          <Route path="/order" element={<Order />} /> 
           {/* <Route path="add" element={<UserAdd />} />
           <Route path="view/:id" element={<CustomerMain />} />
           <Route path="edit/:id" element={<UserEdit />} /> */}

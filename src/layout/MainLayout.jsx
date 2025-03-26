@@ -66,7 +66,13 @@ function MainLayout() {
     {
       type: "divider",
     },
-    getItem("Account", "sub7", <FiUser />, [
+    getItem("Order", "sub7", <AppstoreOutlined />, [
+      getItem("All Order", "/order"),
+    ]),
+    {
+      type: "divider",
+    },
+    getItem("Account", "sub8", <FiUser />, [
       getItem("User Account", "/profile"),
       getItem("Logout", "12"),
     ]),
@@ -102,7 +108,7 @@ function MainLayout() {
       navigate(e.key);
     }
 
-    if (e.keyPath[1] === "sub7") {
+    if (e.keyPath[1] === "sub8") {
       if (e.key === "12") {
         handleLogout();
       }
