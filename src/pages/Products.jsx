@@ -105,11 +105,14 @@ function Products() {
                   <th>Title</th>
                   <th>Brand</th>
                   <th>Category</th>
+                  <th>SubCategory</th>
+                  <th>ChildCategory</th>
                   <th>Color</th>
                   <th>Capacity</th>
                   <th>Price</th>
                   <th>SKU</th>
                   <th>Tags</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -135,9 +138,17 @@ function Products() {
                       </td>
 
                       <td>
-                        {el.categoryId
-                          .map((category) => category.categoryName)
-                          .join(", ")}
+                        {el.categoryId ? el.categoryId.categoryName : "Empty"}
+                      </td>
+                      <td>
+                        {el.subcategoryId
+                          ? el.subcategoryId.subCategory
+                          : "Empty"}
+                      </td>
+                      <td>
+                        {el.childrenCategory
+                          ? el.childrenCategory.replace("/", "")
+                          : "Empty"}
                       </td>
 
                       <td>
@@ -164,6 +175,15 @@ function Products() {
                       <td>${el.amount}</td>
                       <td>{el.sku ? el.sku : "Empty"}</td>
                       <td>{el.tagId.map((tag) => tag.tagName).join(", ")}</td>
+                      <td>
+                        {el.productStatus == "active" ? (
+                          <span className="btn btn-sm btn-success">Active</span>
+                        ) : (
+                          <span className="btn btn-sm btn-secondary">
+                            InActive
+                          </span>
+                        )}
+                      </td>
 
                       <td>
                         <div
@@ -197,7 +217,7 @@ function Products() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={11} className="text-center">
+                    <td colSpan={14} className="text-center">
                       <h4>No data found on the Record.</h4>
                     </td>
                   </tr>

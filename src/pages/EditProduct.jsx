@@ -18,7 +18,6 @@ function EditProduct() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [productInfo, setProductInfo] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [capacity, setCapacity] = useState([]);
   const [tags, setTags] = useState([]);
@@ -34,9 +33,23 @@ function EditProduct() {
   const [tagError, setTagError] = useState("");
   const [defaultSelected, setDefaultSelected] = useState([]);
 
-  const [defaultCategories, setDefaultCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState([]);
+  // const [categories, setCategories] = useState([]);
+  // const [defaultCategories, setDefaultCategories] = useState([]);
+  // const [categoryId, setCategoryId] = useState([]);
+  // const [categoryError, setCategoryError] = useState("");
+
+  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState("");
   const [categoryError, setCategoryError] = useState("");
+
+  const [subSategories, setSubCategories] = useState([]);
+  const [subCategoryId, setSubCategoryId] = useState("");
+  const [subCategoryError, setSubCategoryError] = useState("");
+
+  const [childrenCategory, setChildrenCategory] = useState([]);
+  const [childrenCategoryId, setChildrenCategoryId] = useState("");
+  const [childrenCategoryError, setChildrenCategoryError] = useState("");
+
   const [selectedImages, setSelectedImages] = useState([]);
   const [imageArr, setImageArr] = useState([]);
 
@@ -74,16 +87,17 @@ function EditProduct() {
       .request(config)
       .then((response) => {
         if ("success" in response.data) {
-          let categoryUpdate = response.data.success.data.map((el) => {
-            return {
-              _id: el._id,
-              label: el.categoryName,
-              value: el.categoryName,
-              desc: el.categoryName,
-            };
-          });
+          // let categoryUpdate = response.data.success.data.map((el) => {
+          //   return {
+          //     _id: el._id,
+          //     label: el.categoryName,
+          //     value: el.categoryName,
+          //     desc: el.categoryName,
+          //   };
+          // });
+          console.log("one", response.data.success.data);
 
-          setCategories(categoryUpdate);
+          setCategories(response.data.success.data);
         }
       })
       .catch((error) => {
@@ -252,10 +266,10 @@ function EditProduct() {
       .request(config)
       .then((response) => {
         if ("success" in response.data) {
-          console.log(response.data.success.data);
+          console.log("sumon", response.data.success.data[0]);
+
           setProductInput(response.data.success.data[0].title);
-          setBrandInput(response.data.success.data[0].brandId._id);
-          setCapacityInput(response.data.success.data[0].capacityId._id);
+
           setDefaultSelected(
             response.data.success.data[0].tagId.map((tag) => tag.tagName)
           );
@@ -266,29 +280,34 @@ function EditProduct() {
 
           setTagId(tagData);
 
-          let categoryData = response.data.success.data[0].categoryId.map(
-            (cat) => {
-              return { _id: cat._id };
-            }
-          );
+          // let categoryData = response.data.success.data[0].categoryId.map(
+          //   (cat) => {
+          //     return { _id: cat._id };
+          //   }
+          // );
 
-          setDefaultCategories(
-            response.data.success.data[0].categoryId.map(
-              (cat) => cat.categoryName
-            )
-          );
-
-          setCategoryId(categoryData);
+          // setDefaultCategories(
+          //   response.data.success.data[0].categoryId.map(
+          //     (cat) => cat.categoryName
+          //   )
+          // );
 
           setImageArr(response.data.success.data[0].imageArray);
           setAdditionalInfo(response.data.success.data[0].additionalInfo);
           setDescription(response.data.success.data[0].description);
           setAmountInput(response.data.success.data[0].amount);
           setShortDesc(response.data.success.data[0].shortDesc);
-          setColorInput(response.data.success.data[0].colorId._id);
           setSkuInput(response.data.success.data[0].sku);
-
           setProductInfo(response.data.success.data);
+
+          setColorInput(response.data.success.data[0].colorId?._id);
+          setBrandInput(response.data.success.data[0].brandId?._id);
+          setCapacityInput(response.data.success.data[0].capacityId?._id);
+          setCategoryId(response.data.success.data[0].categoryId?._id);
+          setSubCategoryId(response.data.success.data[0].subcategoryId?._id);
+          setChildrenCategoryId(
+            response.data.success.data[0]?.childrenCategory
+          );
         }
       })
       .catch((error) => {
@@ -330,6 +349,19 @@ function EditProduct() {
     }
   }, [relatedProduct, productInfo]);
 
+  useEffect(() => {
+    if (categories.length > 0 && productInfo.length > 0) {
+      let filterCat = categories.filter(
+        (el) => el._id == productInfo[0].categoryId?._id
+      )[0];
+
+      if (filterCat) {
+        setSubCategories(filterCat.subCategoryId);
+        setChildrenCategory(filterCat.subCategoryId[0]?.childrenCategory);
+      }
+    }
+  }, [categories, productInfo]);
+
   const handleChangeTags = (value) => {
     let selectedTags = tags
       .filter((tag) => value.includes(tag.value))
@@ -349,22 +381,24 @@ function EditProduct() {
     );
   };
 
-  const handleChangeCategory = (value) => {
-    let categoryTags = categories
-      .filter((el) => value.includes(el.value))
-      .map((cat) => {
-        return { _id: cat._id };
-      });
+  const handleChangeCategory = (e) => {
+    let subCatArr = categories.filter((el) => el._id == e.target.value);
+    setSubCategories(subCatArr[0].subCategoryId);
 
     setCategoryError("");
-    setCategoryId(categoryTags);
-    setDefaultCategories(
-      categories
-        .filter((cat) => value.includes(cat.value))
-        .map((cat) => {
-          return cat.value;
-        })
-    );
+    setCategoryId(e.target.value);
+  };
+
+  const handleChangeSubCategory = (e) => {
+    let subCatArr = subSategories.filter((el) => el._id == e.target.value);
+    setChildrenCategory(subCatArr[0].childrenCategory);
+    setSubCategoryError("");
+    setSubCategoryId(e.target.value);
+  };
+
+  const handleChangeChildrenCategory = (e) => {
+    setChildrenCategoryError("");
+    setChildrenCategoryId(e.target.value);
   };
 
   const handleInputFile = (event) => {
@@ -428,16 +462,14 @@ function EditProduct() {
   };
 
   const handleUpdateProduct = () => {
-    // console.log("tagId ssd", tagId);
-    // console.log("defaultSelected", defaultSelected);
-
-    // console.log("categoryId", categoryId);
-    // console.log("defaultCategories", defaultCategories);
-
     if (productInput === "") {
       setProductError("This field is Required!");
-    } else if (categoryId.length === 0) {
+    } else if (categoryId === "") {
       setCategoryError("This field is Required!");
+    } else if (subCategoryId === "") {
+      setSubCategoryError("This field is Required!");
+    } else if (childrenCategoryId === "") {
+      setChildrenCategoryError("This field is Required!");
     } else if (tagId.length == 0) {
       setTagError("This field is Required!");
     } else if (amountInput == "") {
@@ -448,7 +480,9 @@ function EditProduct() {
       setDescriptionError("This field is Required!");
     } else if (
       productInput !== "" &&
-      categoryId.length > 0 &&
+      categoryId !== "" &&
+      subCategoryId !== "" &&
+      childrenCategoryId !== "" &&
       tagId.length > 0 &&
       amountInput !== "" &&
       shortDesc !== "" &&
@@ -473,6 +507,8 @@ function EditProduct() {
           amount: amountInput,
           sku: skuInput,
           categoryId: categoryId,
+          subcategoryId: subCategoryId,
+          childrenCategory: childrenCategoryId,
           tagId,
           brandId: brandInput == "" ? null : brandInput,
           colorId: colorInput == "" ? null : colorInput,
@@ -485,7 +521,7 @@ function EditProduct() {
       };
 
       // console.log("moreProductId =>", moreProductId);
-      // console.log("relatedProductId =>", relatedProductId);
+      // console.log("relatedProductId =>", categoryId, subCategoryId, childrenCategoryId);
 
       setIsLoading(true);
       // return "ok";
@@ -570,19 +606,64 @@ function EditProduct() {
               </div>
 
               <div className="col-md-4 form-group">
-                <Select
-                  mode="multiple"
-                  style={{
-                    width: "100%",
-                  }}
-                  placeholder="All Category"
-                  value={defaultCategories}
+                <select
                   onChange={handleChangeCategory}
-                  options={categories}
-                  optionRender={(option) => <Space>{option.data.desc}</Space>}
-                />
+                  value={categoryId}
+                  className="form-select"
+                >
+                  <option value="">All Category</option>
+                  {categories.map((option) => (
+                    <option key={option._id} value={option._id}>
+                      {option.categoryName}
+                    </option>
+                  ))}
+                </select>
 
                 {categoryError && <ErrorMessage message={categoryError} />}
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-md-4 mt-3 form-group">
+                <select
+                  onChange={handleChangeSubCategory}
+                  value={subCategoryId}
+                  className="form-select"
+                >
+                  <option value="">All Sub Category</option>
+                  {subSategories.map((option) => (
+                    <option key={option._id} value={option._id}>
+                      {option.subCategory}
+                    </option>
+                  ))}
+                </select>
+
+                {subCategoryError && (
+                  <ErrorMessage message={subCategoryError} />
+                )}
+              </div>
+
+              <div className="col-md-4 mt-3 form-group">
+                <select
+                  onChange={handleChangeChildrenCategory}
+                  value={childrenCategoryId}
+                  className="form-select"
+                >
+                  <option value="">All Children Category</option>
+                  {childrenCategory.map((option) => (
+                    <option key={option.link} value={option.link}>
+                      {option.title}
+                    </option>
+                  ))}
+                </select>
+
+                {childrenCategoryError && (
+                  <ErrorMessage message={childrenCategoryError} />
+                )}
+              </div>
+
+              <div className="col-md-4 mt-3 form-group">
+                <input type="text" className="form-control" disabled />
               </div>
             </div>
 
@@ -771,10 +852,6 @@ function EditProduct() {
                 )}
               </div>
             </div>
-            {/* 
-            <button onClick={handleUpdateProduct} className="btn btn-primary">
-              Update Product
-            </button> */}
           </div>
         </div>
 

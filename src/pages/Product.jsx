@@ -19,8 +19,16 @@ function Product() {
 
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState([]);
+  const [categoryId, setCategoryId] = useState("");
   const [categoryError, setCategoryError] = useState("");
+
+  const [subSategories, setSubCategories] = useState([]);
+  const [subCategoryId, setSubCategoryId] = useState("");
+  const [subCategoryError, setSubCategoryError] = useState("");
+
+  const [childrenCategory, setChildrenCategory] = useState([]);
+  const [childrenCategoryId, setChildrenCategoryId] = useState("");
+  const [childrenCategoryError, setChildrenCategoryError] = useState("");
 
   const [capacity, setCapacity] = useState([]);
   const [tags, setTags] = useState([]);
@@ -84,16 +92,7 @@ function Product() {
       .request(config)
       .then((response) => {
         if ("success" in response.data) {
-          let categoryUpdate = response.data.success.data.map((el) => {
-            return {
-              _id: el._id,
-              label: el.categoryName,
-              value: el.categoryName,
-              desc: el.categoryName,
-            };
-          });
-
-          setCategories(categoryUpdate);
+          setCategories(response.data.success.data);
         }
       })
       .catch((error) => {
@@ -230,15 +229,36 @@ function Product() {
     setTagId(selectedTags);
   };
 
-  const handleChangeCategory = (value) => {
-    let categoryTags = categories
-      .filter((el) => value.includes(el.value))
-      .map((cat) => {
-        return { _id: cat._id };
-      });
+  const handleChangeCategory = (e) => {
+    // let categoryTags = categories
+    //   .filter((el) => value.includes(el.value))
+    //   .map((cat) => {
+    //     return { _id: cat._id };
+    //   });
+
+    let subCatArr = categories.filter((el) => el._id == e.target.value);
+
+    // subCategoryId
+    // console.log(e.target.value, subCatArr[0].subCategoryId);
+
+    setSubCategories(subCatArr[0].subCategoryId);
 
     setCategoryError("");
-    setCategoryId(categoryTags);
+    setCategoryId(e.target.value);
+  };
+
+  const handleChangeSubCategory = (e) => {
+    let subCatArr = subSategories.filter((el) => el._id == e.target.value);
+    // console.log(e.target.value, subCatArr[0].childrenCategory);
+
+    setChildrenCategory(subCatArr[0].childrenCategory);
+    setSubCategoryError("");
+    setSubCategoryId(e.target.value);
+  };
+
+  const handleChangeChildrenCategory = (e) => {
+    setChildrenCategoryError("");
+    setChildrenCategoryId(e.target.value);
   };
 
   const handleInputFile = (event) => {
@@ -288,12 +308,14 @@ function Product() {
   };
 
   const handleAddProduct = () => {
-
-    
     if (productInput === "") {
       setProductError("This field is Required!");
-    } else if (categoryId.length === 0) {
+    } else if (categoryId === "") {
       setCategoryError("This field is Required!");
+    } else if (subCategoryId === "") {
+      setSubCategoryError("This field is Required!");
+    } else if (childrenCategoryId === "") {
+      setChildrenCategoryError("This field is Required!");
     } else if (selectedImages.length == 0) {
       setImageError("This field is Required!");
     } else if (tagId.length == 0) {
@@ -306,7 +328,9 @@ function Product() {
       setDescriptionError("This field is Required!");
     } else if (
       productInput !== "" &&
-      categoryId.length > 0 &&
+      categoryId !== "" &&
+      subCategoryId !== "" &&
+      childrenCategoryId !== "" &&
       selectedImages.length > 0 &&
       tagId.length > 0 &&
       amountInput !== "" &&
@@ -331,6 +355,8 @@ function Product() {
           amount: amountInput,
           sku: skuInput,
           categoryId: categoryId,
+          subcategoryId: subCategoryId,
+          childrenCategory: childrenCategoryId,
           tagId,
           brandId: brandInput == "" ? null : brandInput,
           colorId: colorInput == "" ? null : colorInput,
@@ -358,7 +384,16 @@ function Product() {
             setFileKey((prevKey) => prevKey + 1);
             setProductInput("");
             setBrandInput("");
-            setCategoryId([]);
+
+            setCategoryId("");
+            setCategoryError("");
+            setSubCategories([]);
+            setSubCategoryId("");
+            setSubCategoryError("");
+            setChildrenCategory([]);
+            setChildrenCategoryId("");
+            setChildrenCategoryError("");
+
             setCapacityInput("");
             setAmountInput("");
             setColorInput("");
@@ -387,7 +422,16 @@ function Product() {
             setFileKey((prevKey) => prevKey + 1);
             setProductInput("");
             setBrandInput("");
-            setCategoryId([]);
+
+            setCategoryId("");
+            setCategoryError("");
+            setSubCategories([]);
+            setSubCategoryId("");
+            setSubCategoryError("");
+            setChildrenCategory([]);
+            setChildrenCategoryId("");
+            setChildrenCategoryError("");
+
             setCapacityInput("");
             setAmountInput("");
             setColorInput("");
@@ -415,7 +459,6 @@ function Product() {
         .catch((error) => {
           // console.log(error);
         });
-
     }
   };
 
@@ -458,19 +501,67 @@ function Product() {
               </div>
 
               <div className="col-md-4 form-group">
-                <Select
-                  mode="multiple"
-                  style={{
-                    width: "100%",
-                  }}
-                  placeholder="All Category"
-                  key={fileKey}
+                <select
                   onChange={handleChangeCategory}
-                  options={categories}
-                  optionRender={(option) => <Space>{option.data.desc}</Space>}
-                />
+                  value={categoryId}
+                  key={fileKey}
+                  className="form-select"
+                >
+                  <option value="">All Category</option>
+                  {categories.map((option) => (
+                    <option key={option._id} value={option._id}>
+                      {option.categoryName}
+                    </option>
+                  ))}
+                </select>
 
                 {categoryError && <ErrorMessage message={categoryError} />}
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-md-4 mt-3 form-group">
+                <select
+                  onChange={handleChangeSubCategory}
+                  value={subCategoryId}
+                  key={fileKey}
+                  className="form-select"
+                >
+                  <option value="">All Sub Category</option>
+                  {subSategories.map((option) => (
+                    <option key={option._id} value={option._id}>
+                      {option.subCategory}
+                    </option>
+                  ))}
+                </select>
+
+                {subCategoryError && (
+                  <ErrorMessage message={subCategoryError} />
+                )}
+              </div>
+
+              <div className="col-md-4 mt-3 form-group">
+                <select
+                  onChange={handleChangeChildrenCategory}
+                  value={childrenCategoryId}
+                  key={fileKey}
+                  className="form-select"
+                >
+                  <option value="">All Children Category</option>
+                  {childrenCategory.map((option) => (
+                    <option key={option.link} value={option.link}>
+                      {option.title}
+                    </option>
+                  ))}
+                </select>
+
+                {childrenCategoryError && (
+                  <ErrorMessage message={childrenCategoryError} />
+                )}
+              </div>
+
+              <div className="col-md-4 mt-3 form-group">
+                <input type="text" className="form-control" disabled />
               </div>
             </div>
 

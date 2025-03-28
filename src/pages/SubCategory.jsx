@@ -25,6 +25,9 @@ function SubCategory() {
   const [childrenCategory, setChildrenCategory] = useState("");
   const [childrenCategoryError, setChildrenCategoryError] = useState("");
 
+  const [storeCatInfo, setStoreCatInfo] = useState(null);
+  const [storeCatStatus, setStoreCatStatus] = useState(false);
+
   useEffect(() => {
     let config = {
       method: "get",
@@ -225,87 +228,258 @@ function SubCategory() {
       });
   };
 
+  const handleUpdateSubCategory = () => {
+    if (childrenCategory == "") {
+      setChildrenCategoryError("This field is Required!");
+    } else {
+      let genarateNew = childrenCategory.split(",").map((el) => {
+        let linkCreate =
+          el.trim().toLowerCase().split(" ").length !== 0
+            ? el.trim().toLowerCase().split(" ").join("-")
+            : el.trim().toLowerCase();
+
+        return {
+          title: el.trim(),
+          link: `/${linkCreate}`,
+        };
+      });
+
+      let oldArray = storeCatInfo.childrenCategory;
+
+      let newTagId = genarateNew.map((el) => el.title);
+      let oldTagId = oldArray.map((el) => el.title);
+      let removedTags = oldTagId.filter((subCat) => !newTagId.includes(subCat));
+
+      let regenerate = removedTags.map((el) => {
+        let linkCreate =
+          el.trim().toLowerCase().split(" ").length !== 0
+            ? el.trim().toLowerCase().split(" ").join("-")
+            : el.trim().toLowerCase();
+
+        return `/${linkCreate}`;
+      });
+
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: `${baseUrl}/backend/subcategory/update`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        auth: {
+          username: "user",
+          password: postToken,
+        },
+        data: {
+          subCategoryInfo: storeCatInfo,
+          genarateNew,
+          regenerate,
+        },
+      };
+
+      // console.log("removedTags", regenerate);
+
+      setIsLoading(true);
+      axios
+        .request(config)
+        .then((response) => {
+          if ("success" in response.data) {
+            setIsLoading(false);
+
+            setSubCategoryName("");
+            setSubCategoryNameError("");
+            setCategoryId("");
+            setCategoryIdError("");
+            setChildrenCategory("");
+            setChildrenCategoryError("");
+
+            setStoreCatStatus(false);
+            setRefectData(!refectData);
+            setStoreCatInfo(null);
+
+            toast.success(response.data.success.message, {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          } else {
+            setIsLoading(false);
+
+            setSubCategoryName("");
+            setSubCategoryNameError("");
+            setCategoryId("");
+            setCategoryIdError("");
+            setChildrenCategory("");
+            setChildrenCategoryError("");
+
+            setStoreCatStatus(false);
+            setStoreCatInfo(null);
+
+            toast.error(response.data.error.message, {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
+        })
+        .catch((error) => {
+          // console.log(error);
+        });
+    }
+
+    // console.log(subCategoryName, childrenCategory);
+  };
+
   return (
     <Card title="All Sub Category">
       <div>
         <div className="main-box">
-          <div className="one">
-            <div className="row">
-              <div className="col-md-6 form-group">
-                <select
-                  name="categoryId"
-                  onChange={(e) => {
-                    setCategoryId(e.target.value);
-                    setCategoryIdError("");
-                  }}
-                  value={categoryId}
-                  className="form-select"
-                >
-                  <option value="">All Category</option>
-                  {categories.map((option) => (
-                    <option key={option._id} value={option._id}>
-                      {option.categoryName}
-                    </option>
-                  ))}
-                </select>
+          {storeCatStatus ? (
+            <div className="one">
+              <div className="row">
+                <div className="col-md-6 form-group">
+                  <select name="categoryId" disabled className="form-select">
+                    <option value="">All Category</option>
+                  </select>
+                </div>
 
-                {categoryIdError && <ErrorMessage message={categoryIdError} />}
+                <div className="col-md-6 form-group">
+                  <input
+                    type="text"
+                    value={subCategoryName}
+                    disabled
+                    className="form-control"
+                    placeholder="Sub Category Name"
+                  />
+                </div>
               </div>
 
-              <div className="col-md-6 form-group">
-                <input
-                  type="text"
-                  name="categoryName"
-                  value={subCategoryName}
-                  onChange={(e) => {
-                    setSubCategoryName(e.target.value);
-                    setSubCategoryNameError("");
-                  }}
-                  className="form-control"
-                  placeholder="Sub Category Name"
-                />
+              <div className="row">
+                <div className="col-md-12 mt-3 form-group">
+                  <input
+                    type="text"
+                    name="childrenCategory"
+                    value={childrenCategory}
+                    onChange={(e) => {
+                      setChildrenCategory(e.target.value);
+                      setChildrenCategoryError("");
+                    }}
+                    className="form-control"
+                    placeholder="Children Category Name"
+                  />
 
-                {subCategoryNameError && (
-                  <ErrorMessage message={subCategoryNameError} />
-                )}
+                  {childrenCategoryError && (
+                    <ErrorMessage message={childrenCategoryError} />
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="row">
-              <div className="col-md-12 mt-3 form-group">
-                <input
-                  type="text"
-                  name="childrenCategory"
-                  value={childrenCategory}
-                  onChange={(e) => {
-                    setChildrenCategory(e.target.value);
-                    setChildrenCategoryError("");
-                  }}
-                  className="form-control"
-                  placeholder="Children Category Name"
-                />
-
-                {childrenCategoryError && (
-                  <ErrorMessage message={childrenCategoryError} />
-                )}
+              <div className="mt-4">
+                <div className="">
+                  {isLoading ? (
+                    <div className="spinner-border" role="status"></div>
+                  ) : (
+                    <button
+                      onClick={handleUpdateSubCategory}
+                      className="btn btn-primary"
+                    >
+                      Update Sub Category
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-
-            <div className="mt-4">
-              <div className="">
-                {isLoading ? (
-                  <div className="spinner-border" role="status"></div>
-                ) : (
-                  <button
-                    onClick={handleAddSubCategory}
-                    className="btn btn-primary"
+          ) : (
+            <div className="one">
+              <div className="row">
+                <div className="col-md-6 form-group">
+                  <select
+                    name="categoryId"
+                    onChange={(e) => {
+                      setCategoryId(e.target.value);
+                      setCategoryIdError("");
+                    }}
+                    value={categoryId}
+                    className="form-select"
                   >
-                    Add Sub Category
-                  </button>
-                )}
+                    <option value="">All Category</option>
+                    {categories.map((option) => (
+                      <option key={option._id} value={option._id}>
+                        {option.categoryName}
+                      </option>
+                    ))}
+                  </select>
+
+                  {categoryIdError && (
+                    <ErrorMessage message={categoryIdError} />
+                  )}
+                </div>
+
+                <div className="col-md-6 form-group">
+                  <input
+                    type="text"
+                    name="categoryName"
+                    value={subCategoryName}
+                    onChange={(e) => {
+                      setSubCategoryName(e.target.value);
+                      setSubCategoryNameError("");
+                    }}
+                    className="form-control"
+                    placeholder="Sub Category Name"
+                  />
+
+                  {subCategoryNameError && (
+                    <ErrorMessage message={subCategoryNameError} />
+                  )}
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-12 mt-3 form-group">
+                  <input
+                    type="text"
+                    name="childrenCategory"
+                    value={childrenCategory}
+                    onChange={(e) => {
+                      setChildrenCategory(e.target.value);
+                      setChildrenCategoryError("");
+                    }}
+                    className="form-control"
+                    placeholder="Children Category Name"
+                  />
+
+                  {childrenCategoryError && (
+                    <ErrorMessage message={childrenCategoryError} />
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="">
+                  {isLoading ? (
+                    <div className="spinner-border" role="status"></div>
+                  ) : (
+                    <button
+                      onClick={handleAddSubCategory}
+                      className="btn btn-primary"
+                    >
+                      Add Sub Category
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <div className="one">
             <table className="table table-striped table-bordered table-hover">
@@ -335,6 +509,28 @@ function SubCategory() {
                           role="group"
                           className="btn-group btn-group-sm commonBtn"
                         >
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                              setStoreCatInfo(el);
+
+                              if (!storeCatStatus) {
+                                setSubCategoryName(el.subCategory);
+                                setChildrenCategory(
+                                  el?.childrenCategory
+                                    ?.map((item) => item.title)
+                                    .join(", ")
+                                );
+                              } else {
+                                setSubCategoryName("");
+                                setChildrenCategory("");
+                              }
+
+                              setStoreCatStatus(!storeCatStatus);
+                            }}
+                          >
+                            Edit
+                          </button>
                           <button
                             type="button"
                             className="btn btn-danger"

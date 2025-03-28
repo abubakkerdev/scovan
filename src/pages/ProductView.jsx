@@ -37,7 +37,6 @@ function ProductView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  
   return (
     <Card title="View Product">
       <div>
@@ -94,14 +93,22 @@ function ProductView() {
                       : "Empty"}
                   </td>
                 </tr>
+
                 <tr>
                   <th>Categories</th>
-                  <td>
-                    {product?.categoryId
-                      ?.map((cat) => cat.categoryName)
-                      .join(", ")}
-                  </td>
+                  <td>{product?.categoryId?.categoryName}</td>
                 </tr>
+
+                <tr>
+                  <th>SubCategory</th>
+                  <td>{product?.subcategoryId?.subCategory}</td>
+                </tr>
+
+                <tr>
+                  <th>ChildCategory</th>
+                  <td>{product?.childrenCategory?.replace("/", "")}</td>
+                </tr>
+
                 <tr>
                   <th>Tags</th>
                   <td>

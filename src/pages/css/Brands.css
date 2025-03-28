@@ -30,3 +30,7 @@
 .changeRow {
   align-items: flex-end;
 }
+.ones {
+  width: 40%;
+  margin-top: 30px;
+}

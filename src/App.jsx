@@ -44,10 +44,9 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/product/edit/:id" element={<EditProduct />} />
           <Route path="/product/view/:id" element={<ProductView />} />
-          <Route path="/order" element={<Order />} /> 
+          <Route path="/order" element={<Order />} />
           {/* <Route path="add" element={<UserAdd />} />
-          <Route path="view/:id" element={<CustomerMain />} />
-          <Route path="edit/:id" element={<UserEdit />} /> */}
+          <Route path="view/:id" element={<CustomerMain />} /> */}
         </Route>
 
         <Route path="/login" element={<Login />} />

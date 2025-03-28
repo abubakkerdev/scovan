@@ -86,7 +86,7 @@ function MainLayout() {
       type: "divider",
     },
   ]);
-  
+
   const userAuth = useSelector((state) => state.userInfo.userData);
 
   useEffect(() => {
