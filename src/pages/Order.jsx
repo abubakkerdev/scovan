@@ -301,13 +301,17 @@ function Order() {
                 )}
               </tbody>
             </table>
-            <button
+
+
+            {/* <button
               type="button"
               onClick={handleAddDelete}
               className="btn btn-danger"
             >
               Add Data
-            </button>
+            </button> */}
+
+
             <div
               className="modal fade"
               id="exampleModal"
