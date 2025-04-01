@@ -27,6 +27,7 @@ import EditProduct from "./pages/EditProduct";
 import ProductView from "./pages/ProductView";
 import Order from "./pages/Order";
 import SubCategory from "./pages/SubCategory";
+import Testimonial from "./pages/Testimonial";
 
 function App() {
   const router = createBrowserRouter(
@@ -42,6 +43,7 @@ function App() {
           <Route path="/color" element={<Color />} />
           <Route path="/addproduct" element={<Product />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/testimonial" element={<Testimonial />} />
           <Route path="/product/edit/:id" element={<EditProduct />} />
           <Route path="/product/view/:id" element={<ProductView />} />
           <Route path="/order" element={<Order />} />

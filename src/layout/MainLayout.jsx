@@ -59,8 +59,8 @@ function MainLayout() {
     {
       type: "divider",
     },
-    getItem("Color", "sub6", <AppstoreOutlined />, [
-      getItem("All Color", "/color"),
+    getItem("Testimonial", "sub6", <AppstoreOutlined />, [
+      getItem("All Testimonial", "/testimonial"),
     ]),
     {
       type: "divider",
@@ -85,7 +85,7 @@ function MainLayout() {
     {
       type: "divider",
     },
-  ]);
+  ]); 
 
   const userAuth = useSelector((state) => state.userInfo.userData);
 
