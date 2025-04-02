@@ -40,3 +40,8 @@
 .tableData {
   width: 60%;
 }
+
+.myCustomDate {
+  width: 100%;
+  height: 38px;
+}

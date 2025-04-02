@@ -65,20 +65,27 @@ function MainLayout() {
     {
       type: "divider",
     },
-    getItem("Products", "sub7", <AppstoreOutlined />, [
+    getItem("Coupon", "sub7", <AppstoreOutlined />, [
+      getItem("Add Coupon", "/addcoupon"),
+      getItem("All Coupon", "/coupon"),
+    ]),
+    {
+      type: "divider",
+    },
+    getItem("Products", "sub8", <AppstoreOutlined />, [
       getItem("Add Product", "/addproduct"),
       getItem("All Product", "/products"),
     ]),
     {
       type: "divider",
     },
-    getItem("Order", "sub8", <AppstoreOutlined />, [
+    getItem("Order", "sub9", <AppstoreOutlined />, [
       getItem("All Order", "/order"),
     ]),
     {
       type: "divider",
     },
-    getItem("Account", "sub9", <FiUser />, [
+    getItem("Account", "sub10", <FiUser />, [
       getItem("User Account", "/profile"),
       getItem("Logout", "12"),
     ]),
@@ -115,7 +122,7 @@ function MainLayout() {
       navigate(e.key);
     }
 
-    if (e.keyPath[1] === "sub9") {
+    if (e.keyPath[1] === "sub10") {
       if (e.key === "12") {
         handleLogout();
       }
