@@ -11,8 +11,12 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function Order() {
   const [orders, setOrder] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [id, setId] = useState("");
   const [refetchData, setRefetchData] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2; // Show 2 items per page
 
   const handleDelete = () => {
     let config = {
@@ -213,11 +217,38 @@ function Order() {
       });
   }, [refetchData]);
 
+  // Filter orders based on search input
+  const filteredOrders = orders.filter((el) =>
+    [el.uname, el.email, el.phone].some((field) =>
+      field?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentOrders = filteredOrders.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
   return (
     <Card title="All Order" className="iconParent">
       <div>
         <div className="main-box">
           <div className="one">
+            <div className="row">
+              <div className="col-md-3 form-group">
+                {/* Search Input */}
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or phone"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="mb-3 p-2 form-control border rounded w-full"
+                />
+              </div>
+            </div>
             <table className="table table-striped table-bordered table-hover">
               <thead>
                 <tr>
@@ -242,8 +273,8 @@ function Order() {
                 </tr>
               </thead>
               <tbody>
-                {orders.length !== 0 ? (
-                  orders.map((el, index) => (
+                {currentOrders.length !== 0 ? (
+                  currentOrders.map((el, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
                       {/* <td>{el._id.toString()}</td> */}
@@ -313,13 +344,42 @@ function Order() {
                 )}
               </tbody>
             </table>
-            <button
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 mx-2 border rounded bg-gray-200 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1 mx-2">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 mx-2 border rounded bg-gray-200 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+
+            {/* <button
               type="button"
               onClick={handleAddDelete}
               className="btn btn-danger"
             >
               Add Data
-            </button>
+            </button> */}
+
             <div
               className="modal fade"
               id="exampleModal"

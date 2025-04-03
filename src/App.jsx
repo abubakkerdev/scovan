@@ -20,7 +20,6 @@ import Brands from "./pages/Brands";
 import Categories from "./pages/Categories";
 import Tags from "./pages/Tags";
 import Capacity from "./pages/Capacity";
-import Color from "./pages/Color";
 import Product from "./pages/Product";
 import Products from "./pages/Products";
 import EditProduct from "./pages/EditProduct";
@@ -42,7 +41,6 @@ function App() {
           <Route path="/tags" element={<Tags />} />
           <Route path="/capacity" element={<Capacity />} />
           <Route path="/subcategory" element={<SubCategory />} />
-          <Route path="/color" element={<Color />} />
           <Route path="/addproduct" element={<Product />} />
           <Route path="/products" element={<Products />} />
           <Route path="/testimonial" element={<Testimonial />} />
