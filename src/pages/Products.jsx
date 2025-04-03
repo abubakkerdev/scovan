@@ -107,7 +107,6 @@ function Products() {
                   <th>Category</th>
                   <th>SubCategory</th>
                   <th>ChildCategory</th>
-                  <th>Color</th>
                   <th>Capacity</th>
                   <th>Price</th>
                   <th>SKU</th>
@@ -151,22 +150,6 @@ function Products() {
                           : "Empty"}
                       </td>
 
-                      <td>
-                        {el.colorId?.colorName ? (
-                          <div className="customFlex">
-                            {el.colorId?.colorName.split(",")[0]}
-
-                            <span
-                              style={{
-                                background: el.colorId?.colorName.split(",")[1],
-                              }}
-                              className="convertColor"
-                            ></span>
-                          </div>
-                        ) : (
-                          "Empty"
-                        )}
-                      </td>
                       <td>
                         {el.capacityId?.capacityName
                           ? el.capacityId?.capacityName
@@ -217,7 +200,7 @@ function Products() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={14} className="text-center">
+                    <td colSpan={13} className="text-center">
                       <h4>No data found on the Record.</h4>
                     </td>
                   </tr>
