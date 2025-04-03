@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Card } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { HiOutlineRefresh } from "react-icons/hi";
 import "./css/Brands.css";
-import { Link } from "react-router-dom";
 
 const postToken = import.meta.env.VITE_API_BACKEND_POST_TOKEN;
 const getToken = import.meta.env.VITE_API_BACKEND_GET_TOKEN;
@@ -12,6 +12,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
 function Order() {
   const [orders, setOrder] = useState([]);
   const [id, setId] = useState("");
+  const [refetchData, setRefetchData] = useState(false);
 
   const handleDelete = () => {
     let config = {
@@ -80,17 +81,16 @@ function Order() {
         password: postToken,
       },
       data: {
-        firstName: "Sumon",
-        lastName: "",
-        company: "IT Soft",
-        country: "Bangladesh",
+        uname: "IIT",
+        phone: "01653623726",
         city: "Dhaka",
-        streetAddress: "Demo",
-        apartment: "",
-        phone: "01754623812",
-        email: "demo@gmail.com",
+        area: "Demo",
+        address: "Demo",
+        email: "info@gmail.com",
         orderNotes: "",
-        shipping: "Flat Rate",
+        shippingCharge: "100",
+        shippingMethod: "Outside Dhaka",
+
         productInfo: [
           {
             id: "67e2c2911d80ea3c33f71801",
@@ -105,8 +105,10 @@ function Order() {
             quantity: 7,
           },
         ],
-        paymentGateway: true,
-        amount: 6000,
+        totalAmount: 5060,
+        discountAmount: "0",
+        paymentGateway: "Cash On",
+        amount: 5060,
         userId: null,
       },
     };
@@ -179,6 +181,14 @@ function Order() {
       });
   };
 
+  const [isRotating, setIsRotating] = useState(false);
+
+  const handleClick = () => {
+    setIsRotating(true);
+    setTimeout(() => setIsRotating(false), 500);
+    setRefetchData(!refetchData);
+  };
+
   useEffect(() => {
     let config = {
       method: "get",
@@ -201,10 +211,10 @@ function Order() {
       .catch((error) => {
         // console.log(error);
       });
-  }, []);
+  }, [refetchData]);
 
   return (
-    <Card title="All Order">
+    <Card title="All Order" className="iconParent">
       <div>
         <div className="main-box">
           <div className="one">
@@ -215,16 +225,18 @@ function Order() {
                   {/* <th>Order Id</th> */}
                   <th>User Name</th>
                   <th>Email</th>
-                  <th>Country</th>
-                  <th>City</th>
-                  <th>Street Address</th>
-                  <th>Apartment</th>
                   <th>Phone</th>
-                  <th>Shipping</th>
-                  <th>Company Name</th>
+                  <th>City</th>
+                  <th>Area</th>
+                  <th>Address</th>
                   <th>Order Notes</th>
+                  <th>Shipping</th>
+                  <th>Shipping Method</th>
+                  <th>Pay Gateway</th>
                   <th>Product Info</th>
-                  <th>Price</th>
+                  <th>Amount</th>
+                  <th>Discount</th>
+                  <th>Total</th>
                   <th>User (Login)</th>
                   <th>Action</th>
                 </tr>
@@ -235,16 +247,16 @@ function Order() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       {/* <td>{el._id.toString()}</td> */}
-                      <td>{el.firstName}</td>
-                      <td>{el.email}</td>
-                      <td>{el.country}</td>
-                      <td>{el.city}</td>
-                      <td>{el.streetAddress}</td>
-                      <td>{el.apartment ? el.apartment : "Empty"}</td>
+                      <td>{el.uname}</td>
+                      <td>{el.email ? el.email : "Empty"}</td>
                       <td>{el.phone}</td>
-                      <td>{el.shipping}</td>
-                      <td>{el.company ? el.company : "Empty"}</td>
+                      <td>{el.city}</td>
+                      <td>{el.area}</td>
+                      <td>{el.address}</td>
                       <td>{el.orderNotes ? el.orderNotes : "Empty"}</td>
+                      <td>{el.shippingCharge}</td>
+                      <td>{el.shippingMethod}</td>
+                      <td>{el.paymentGateway}</td>
                       <td>
                         {el.productInfo?.length !== 0 &&
                           el.productInfo?.map((product, ind) => (
@@ -257,10 +269,10 @@ function Order() {
                             </div>
                           ))}
                       </td>
-
+                      <td>${el.totalAmount}</td>
+                      <td>${el.discountAmount}</td>
                       <td>${el.amount}</td>
                       <td>{el.userId ? el.userId.uname : "Empty"}</td>
-
                       <td>
                         {el.orderStatus == "1" ? (
                           <div
@@ -294,24 +306,20 @@ function Order() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={16} className="text-center">
+                    <td colSpan={17} className="text-center">
                       <h4>No data found on the Record.</h4>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-
-
-            {/* <button
+            <button
               type="button"
               onClick={handleAddDelete}
               className="btn btn-danger"
             >
               Add Data
-            </button> */}
-
-
+            </button>
             <div
               className="modal fade"
               id="exampleModal"
@@ -356,6 +364,11 @@ function Order() {
             </div>
           </div>
         </div>
+
+        <HiOutlineRefresh
+          className={`refreshCustom ${isRotating ? "rotate-animation" : ""}`}
+          onClick={handleClick}
+        />
 
         <ToastContainer
           position="top-right"

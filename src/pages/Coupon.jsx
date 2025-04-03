@@ -9,15 +9,11 @@ import dayjs from "dayjs";
 import buddhistEra from "dayjs/plugin/buddhistEra";
 dayjs.extend(buddhistEra);
 
-// const defaultValue = dayjs("2025-01-01");
-
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 const postToken = import.meta.env.VITE_API_BACKEND_POST_TOKEN;
 
 function Coupon() {
   const [isLoading, setIsLoading] = useState(false);
-  const [refectData, setRefectData] = useState(false);
-
   const [couponCode, setCouponCode] = useState("");
   const [couponCodeError, setCouponCodeError] = useState("");
 
@@ -41,17 +37,11 @@ function Coupon() {
 
   const [resetDate, setResetDate] = useState(false);
 
-
   const onChange = (_, dateStr) => {
     const dateTime = dayjs(dateStr);
-
-    // Unix timestamp (milliseconds)
     const milliseconds = dateTime.valueOf();
-
-    // console.log("onChange:", dateStr);
     setExpiredDate(milliseconds);
     setExpiredDateError("");
-    // console.log(milliseconds);
   };
 
   const handleAddCoupon = () => {
@@ -70,16 +60,6 @@ function Coupon() {
     } else if (discountType == "Percentage" && maximumDiscount == "") {
       setMaximumDiscountError("This field is Required!");
     } else {
-      // console.log(
-      //   couponCode,
-      //   discountType,
-      //   shippingCharge,
-      //   discountRate,
-      //   minimumShopping,
-      //   expiredDate,
-      //   maximumDiscount
-      // );
-
       let config = {
         method: "post",
         maxBodyLength: Infinity,
@@ -287,7 +267,6 @@ function Coupon() {
 
               <div className="col-md-4 form-group">
                 <DatePicker
-                  //   defaultValue={defaultValue}
                   showTime
                   onChange={onChange}
                   className="myCustomDate"
