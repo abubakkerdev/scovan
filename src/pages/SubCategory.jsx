@@ -15,18 +15,22 @@ function SubCategory() {
 
   const [subCategory, setSubCategory] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [id, setId] = useState("");
 
   const [subCategoryName, setSubCategoryName] = useState("");
   const [subCategoryNameError, setSubCategoryNameError] = useState("");
 
   const [categoryId, setCategoryId] = useState("");
   const [categoryIdError, setCategoryIdError] = useState("");
-  const [childrenCategory, setChildrenCategory] = useState("");
-  const [childrenCategoryError, setChildrenCategoryError] = useState("");
 
   const [storeCatInfo, setStoreCatInfo] = useState(null);
   const [storeCatStatus, setStoreCatStatus] = useState(false);
+  const [categoryName, setCategoryName] = useState("");
+  const [storeCatName, setStoreCatName] = useState("");
+  const [storeCatNameError, setStoreCatNameError] = useState("");
+  const [storeCatId, setStoreCatId] = useState("");
+  const [storeCatIdError, setStoreCatIdError] = useState("");
+
+  const [deleteSubCat, setDeleteSubCat] = useState(false);
 
   useEffect(() => {
     let config = {
@@ -67,6 +71,7 @@ function SubCategory() {
       .then((response) => {
         if ("success" in response.data) {
           setSubCategory(response.data.success.data);
+          console.log(response.data.success.data);
         }
       })
       .catch((error) => {
@@ -79,23 +84,7 @@ function SubCategory() {
       setCategoryIdError("This field is Required!");
     } else if (subCategoryName == "") {
       setSubCategoryNameError("This field is Required!");
-    } else if (childrenCategory == "") {
-      setChildrenCategoryError("This field is Required!");
     } else {
-      let genarate = childrenCategory.split(",").map((el) => {
-        let linkCreate =
-          el.trim().toLowerCase().split(" ").length !== 0
-            ? el.trim().toLowerCase().split(" ").join("-")
-            : el.trim().toLowerCase();
-
-        return {
-          title: el.trim(),
-          link: `/${linkCreate}`,
-        };
-      });
-
-      //   console.log(genarate);
-
       //   return "sdf";
 
       let config = {
@@ -112,7 +101,6 @@ function SubCategory() {
         data: {
           subCategory: subCategoryName,
           categoryId,
-          childrenCategory: genarate,
         },
       };
 
@@ -127,8 +115,6 @@ function SubCategory() {
             setSubCategoryNameError("");
             setCategoryId("");
             setCategoryIdError("");
-            setChildrenCategory("");
-            setChildrenCategoryError("");
 
             setRefectData(!refectData);
 
@@ -149,8 +135,6 @@ function SubCategory() {
             setSubCategoryNameError("");
             setCategoryId("");
             setCategoryIdError("");
-            setChildrenCategory("");
-            setChildrenCategoryError("");
 
             toast.error(response.data.error.message, {
               position: "top-right",
@@ -171,98 +155,13 @@ function SubCategory() {
   };
 
   const handleDelete = () => {
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${baseUrl}/backend/subcategory/destroy`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      auth: {
-        username: "user",
-        password: postToken,
-      },
-      data: { subCategoryInfo: id },
-    };
-
-    // console.log("id", id);
-
-    // return "sdf";
-
-    axios
-      .request(config)
-      .then((response) => {
-        if ("success" in response.data) {
-          setRefectData(!refectData);
-
-          setId("");
-
-          toast.success(response.data.success.message, {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        } else {
-          setId("");
-          setRefectData(!refectData);
-
-          toast.error(response.data.error.message, {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          });
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
-  };
-
-  const handleUpdateSubCategory = () => {
-    if (childrenCategory == "") {
-      setChildrenCategoryError("This field is Required!");
+    if (storeCatId == "") {
+      setStoreCatIdError("This field is Required!");
     } else {
-      let genarateNew = childrenCategory.split(",").map((el) => {
-        let linkCreate =
-          el.trim().toLowerCase().split(" ").length !== 0
-            ? el.trim().toLowerCase().split(" ").join("-")
-            : el.trim().toLowerCase();
-
-        return {
-          title: el.trim(),
-          link: `/${linkCreate}`,
-        };
-      });
-
-      let oldArray = storeCatInfo.childrenCategory;
-
-      let newTagId = genarateNew.map((el) => el.title);
-      let oldTagId = oldArray.map((el) => el.title);
-      let removedTags = oldTagId.filter((subCat) => !newTagId.includes(subCat));
-
-      let regenerate = removedTags.map((el) => {
-        let linkCreate =
-          el.trim().toLowerCase().split(" ").length !== 0
-            ? el.trim().toLowerCase().split(" ").join("-")
-            : el.trim().toLowerCase();
-
-        return `/${linkCreate}`;
-      });
-
       let config = {
         method: "post",
         maxBodyLength: Infinity,
-        url: `${baseUrl}/backend/subcategory/update`,
+        url: `${baseUrl}/backend/subcategory/destroy`,
         headers: {
           "Content-Type": "application/json",
         },
@@ -270,32 +169,22 @@ function SubCategory() {
           username: "user",
           password: postToken,
         },
-        data: {
-          subCategoryInfo: storeCatInfo,
-          genarateNew,
-          regenerate,
-        },
+        data: { catId: storeCatInfo._id, subCatId: storeCatId },
       };
 
-      // console.log("removedTags", regenerate);
-
       setIsLoading(true);
+
       axios
         .request(config)
         .then((response) => {
           if ("success" in response.data) {
-            setIsLoading(false);
-
-            setSubCategoryName("");
-            setSubCategoryNameError("");
-            setCategoryId("");
-            setCategoryIdError("");
-            setChildrenCategory("");
-            setChildrenCategoryError("");
-
-            setStoreCatStatus(false);
-            setRefectData(!refectData);
             setStoreCatInfo(null);
+            setStoreCatName("");
+            setStoreCatId("");
+            setCategoryName("");
+            setDeleteSubCat(false);
+            setIsLoading(false);
+            setRefectData(!refectData);
 
             toast.success(response.data.success.message, {
               position: "top-right",
@@ -308,17 +197,13 @@ function SubCategory() {
               theme: "light",
             });
           } else {
-            setIsLoading(false);
-
-            setSubCategoryName("");
-            setSubCategoryNameError("");
-            setCategoryId("");
-            setCategoryIdError("");
-            setChildrenCategory("");
-            setChildrenCategoryError("");
-
-            setStoreCatStatus(false);
             setStoreCatInfo(null);
+            setStoreCatName("");
+            setStoreCatId("");
+            setCategoryName("");
+            setDeleteSubCat(false);
+            setIsLoading(false);
+            setRefectData(!refectData);
 
             toast.error(response.data.error.message, {
               position: "top-right",
@@ -336,8 +221,83 @@ function SubCategory() {
           // console.log(error);
         });
     }
+  };
 
-    // console.log(subCategoryName, childrenCategory);
+  const handleUpdateSubCategory = () => {
+    if (storeCatId == "") {
+      setStoreCatIdError("This field is Required!");
+    } else if (storeCatName == "") {
+      setStoreCatNameError("This field is Required!");
+    } else {
+      let config = {
+        method: "post",
+        maxBodyLength: Infinity,
+        url: `${baseUrl}/backend/subcategory/update`,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        auth: {
+          username: "user",
+          password: postToken,
+        },
+        data: {
+          id: storeCatId,
+          subCatName: storeCatName,
+        },
+      };
+
+      setIsLoading(true);
+      axios
+        .request(config)
+        .then((response) => {
+          if ("success" in response.data) {
+            setIsLoading(false);
+
+            setStoreCatInfo(null);
+            setStoreCatStatus(false);
+            setCategoryName("");
+            setStoreCatName("");
+            setStoreCatNameError("");
+            setStoreCatId("");
+            setStoreCatIdError("");
+
+            setRefectData(!refectData);
+            toast.success(response.data.success.message, {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          } else {
+            setStoreCatInfo(null);
+            setStoreCatStatus(false);
+            setCategoryName("");
+            setStoreCatName("");
+            setStoreCatNameError("");
+            setStoreCatId("");
+            setStoreCatIdError("");
+
+            setIsLoading(false);
+            toast.error(response.data.error.message, {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
+          }
+        })
+        .catch((error) => {
+          // console.log(error);
+        });
+    }
   };
 
   return (
@@ -345,22 +305,44 @@ function SubCategory() {
       <div>
         <div className="main-box">
           {storeCatStatus ? (
-            <div className="one">
+            <div className="oneFromCustom">
               <div className="row">
                 <div className="col-md-6 form-group">
-                  <select name="categoryId" disabled className="form-select">
+                  <select
+                    name="categoryId"
+                    value={categoryName}
+                    disabled
+                    className="form-select"
+                  >
                     <option value="">All Category</option>
+                    <option>{categoryName}</option>
                   </select>
                 </div>
 
                 <div className="col-md-6 form-group">
-                  <input
-                    type="text"
-                    value={subCategoryName}
-                    disabled
-                    className="form-control"
-                    placeholder="Sub Category Name"
-                  />
+                  <select
+                    onChange={(e) => {
+                      setStoreCatId(e.target.value);
+                      setStoreCatName(
+                        storeCatInfo.subCategoryId?.find(
+                          (el) => el._id == e.target.value
+                        )?.subCategory
+                      );
+                      setStoreCatIdError("");
+                    }}
+                    className="form-select"
+                  >
+                    <option value="">All Sub Category</option>
+                    {storeCatInfo.subCategoryId?.map((option) => (
+                      <option key={option._id} value={option._id}>
+                        {option.subCategory}
+                      </option>
+                    ))}
+                  </select>
+
+                  {storeCatIdError && (
+                    <ErrorMessage message={storeCatIdError} />
+                  )}
                 </div>
               </div>
 
@@ -368,18 +350,17 @@ function SubCategory() {
                 <div className="col-md-12 mt-3 form-group">
                   <input
                     type="text"
-                    name="childrenCategory"
-                    value={childrenCategory}
+                    value={storeCatName}
                     onChange={(e) => {
-                      setChildrenCategory(e.target.value);
-                      setChildrenCategoryError("");
+                      setStoreCatName(e.target.value);
+                      setStoreCatNameError("");
                     }}
                     className="form-control"
-                    placeholder="Children Category Name"
+                    placeholder="Sub Category Name"
                   />
 
-                  {childrenCategoryError && (
-                    <ErrorMessage message={childrenCategoryError} />
+                  {storeCatNameError && (
+                    <ErrorMessage message={storeCatNameError} />
                   )}
                 </div>
               </div>
@@ -399,8 +380,73 @@ function SubCategory() {
                 </div>
               </div>
             </div>
+          ) : deleteSubCat ? (
+            <div className="oneFromCustom">
+              <div className="row">
+                <div className="col-md-6 form-group">
+                  <select
+                    name="categoryId"
+                    value={categoryName}
+                    disabled
+                    className="form-select"
+                  >
+                    <option value="">All Category</option>
+                    <option>{categoryName}</option>
+                  </select>
+                </div>
+
+                <div className="col-md-6 form-group">
+                  <select
+                    onChange={(e) => {
+                      setStoreCatId(e.target.value);
+                      setStoreCatName(
+                        storeCatInfo.subCategoryId?.find(
+                          (el) => el._id == e.target.value
+                        )?.subCategory
+                      );
+                      setStoreCatIdError("");
+                    }}
+                    className="form-select"
+                  >
+                    <option value="">All Sub Category</option>
+                    {storeCatInfo.subCategoryId?.map((option) => (
+                      <option key={option._id} value={option._id}>
+                        {option.subCategory}
+                      </option>
+                    ))}
+                  </select>
+
+                  {storeCatIdError && (
+                    <ErrorMessage message={storeCatIdError} />
+                  )}
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-md-12 mt-3 form-group">
+                  <input
+                    type="text"
+                    value={storeCatName}
+                    disabled
+                    className="form-control"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="">
+                  {isLoading ? (
+                    <div className="spinner-border" role="status"></div>
+                  ) : (
+                    <button onClick={handleDelete} className="btn btn-danger">
+                      Confirm Delete
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           ) : (
-            <div className="one">
+            <div className="oneFromCustom">
               <div className="row">
                 <div className="col-md-6 form-group">
                   <select
@@ -444,26 +490,6 @@ function SubCategory() {
                 </div>
               </div>
 
-              <div className="row">
-                <div className="col-md-12 mt-3 form-group">
-                  <input
-                    type="text"
-                    name="childrenCategory"
-                    value={childrenCategory}
-                    onChange={(e) => {
-                      setChildrenCategory(e.target.value);
-                      setChildrenCategoryError("");
-                    }}
-                    className="form-control"
-                    placeholder="Children Category Name"
-                  />
-
-                  {childrenCategoryError && (
-                    <ErrorMessage message={childrenCategoryError} />
-                  )}
-                </div>
-              </div>
-
               <div className="mt-4">
                 <div className="">
                   {isLoading ? (
@@ -481,14 +507,13 @@ function SubCategory() {
             </div>
           )}
 
-          <div className="one">
+          <div className="oneTableCustom">
             <table className="table table-striped table-bordered table-hover">
               <thead>
                 <tr>
                   <th>#Sl</th>
                   <th>Category</th>
                   <th>Sub Category</th>
-                  <th>Children Category</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -497,13 +522,16 @@ function SubCategory() {
                   subCategory.map((el, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
-                      <td>{el.categoryId.categoryName}</td>
-                      <td>{el.subCategory}</td>
+                      <td>{el.categoryName}</td>
+
                       <td>
-                        {el?.childrenCategory
-                          ?.map((item) => item.title)
-                          .join(", ")}
+                        {el.subCategoryId.length !== 0
+                          ? el.subCategoryId
+                              .map((subCat) => subCat.subCategory)
+                              .join(", ")
+                          : "Empty"}
                       </td>
+
                       <td>
                         <div
                           role="group"
@@ -513,19 +541,9 @@ function SubCategory() {
                             className="btn btn-primary"
                             onClick={() => {
                               setStoreCatInfo(el);
-
                               if (!storeCatStatus) {
-                                setSubCategoryName(el.subCategory);
-                                setChildrenCategory(
-                                  el?.childrenCategory
-                                    ?.map((item) => item.title)
-                                    .join(", ")
-                                );
-                              } else {
-                                setSubCategoryName("");
-                                setChildrenCategory("");
+                                setCategoryName(el.categoryName);
                               }
-
                               setStoreCatStatus(!storeCatStatus);
                             }}
                           >
@@ -534,9 +552,15 @@ function SubCategory() {
                           <button
                             type="button"
                             className="btn btn-danger"
-                            data-bs-toggle="modal"
-                            onClick={() => setId(el)}
-                            data-bs-target="#exampleModal"
+                            onClick={() => {
+                              setStoreCatInfo(el);
+                              setStoreCatName("");
+                              setStoreCatId("");
+                              if (!storeCatStatus) {
+                                setCategoryName(el.categoryName);
+                              }
+                              setDeleteSubCat(!deleteSubCat);
+                            }}
                           >
                             Delete
                           </button>
@@ -546,56 +570,13 @@ function SubCategory() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="text-center">
+                    <td colSpan={4} className="text-center">
                       <h4>No data found on the Record.</h4>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-
-            <div
-              className="modal fade"
-              id="exampleModal"
-              aria-labelledby="exampleModalLabel"
-              aria-hidden="true"
-            >
-              <div className="modal-dialog">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title" id="exampleModalLabel">
-                      Are You Sure?
-                    </h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  <div className="modal-body">
-                    <h4>Do you want to delete this User ?</h4>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      data-bs-dismiss="modal"
-                    >
-                      No
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleDelete}
-                      data-bs-dismiss="modal"
-                      className="btn btn-danger"
-                    >
-                      Yes
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

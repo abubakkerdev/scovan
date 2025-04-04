@@ -11,6 +11,7 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 function Category() {
   const [isLoading, setIsLoading] = useState(false);
+  const [refectData, setRefectData] = useState(false);
 
   const [categories, setCategories] = useState([]);
   const [id, setId] = useState("");
@@ -48,7 +49,7 @@ function Category() {
       .catch((error) => {
         // console.log(error);
       });
-  }, []);
+  }, [refectData]);
 
   const handleAddCategory = () => {
     if (categoryName == "") {
@@ -78,8 +79,7 @@ function Category() {
             setCategoryName("");
             setCategoryNameError("");
 
-            setCategories((prev) => [...prev, response.data.success.data]);
-
+            setRefectData(!refectData);
 
             toast.success(response.data.success.message, {
               position: "top-right",
@@ -114,7 +114,7 @@ function Category() {
         });
     }
   };
-
+ 
   const handleDelete = () => {
     let config = {
       method: "post",

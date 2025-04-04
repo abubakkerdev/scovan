@@ -106,7 +106,6 @@ function Products() {
                   <th>Brand</th>
                   <th>Category</th>
                   <th>SubCategory</th>
-                  <th>ChildCategory</th>
                   <th>Capacity</th>
                   <th>Price</th>
                   <th>SKU</th>
@@ -135,7 +134,6 @@ function Products() {
                           ? el.brandId?.brandName
                           : "Empty"}
                       </td>
-
                       <td>
                         {el.categoryId ? el.categoryId.categoryName : "Empty"}
                       </td>
@@ -144,12 +142,6 @@ function Products() {
                           ? el.subcategoryId.subCategory
                           : "Empty"}
                       </td>
-                      <td>
-                        {el.childrenCategory
-                          ? el.childrenCategory.replace("/", "")
-                          : "Empty"}
-                      </td>
-
                       <td>
                         {el.capacityId?.capacityName
                           ? el.capacityId?.capacityName
