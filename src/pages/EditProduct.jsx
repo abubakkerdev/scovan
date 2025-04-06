@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import { Card, Select, Space, Image } from "antd";
+import { Fragment, useEffect, useState } from "react";
+import { MdDelete } from "react-icons/md";
+import { Card, Select, Space, Image, Checkbox } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "./css/Brands.css";
@@ -16,13 +17,13 @@ function EditProduct() {
   const { id } = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [dataRefetch, setDataRefetch] = useState(false);
 
   const [productInfo, setProductInfo] = useState([]);
   const [brands, setBrands] = useState([]);
   const [capacity, setCapacity] = useState([]);
   const [tags, setTags] = useState([]);
-  const [colors, setColors] = useState([]);
-  const [moreProduct, setMoreProduct] = useState([]);
+
   const [relatedProduct, setRelatedProduct] = useState([]);
 
   const [productInput, setProductInput] = useState("");
@@ -33,11 +34,6 @@ function EditProduct() {
   const [tagError, setTagError] = useState("");
   const [defaultSelected, setDefaultSelected] = useState([]);
 
-  // const [categories, setCategories] = useState([]);
-  // const [defaultCategories, setDefaultCategories] = useState([]);
-  // const [categoryId, setCategoryId] = useState([]);
-  // const [categoryError, setCategoryError] = useState("");
-
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
   const [categoryError, setCategoryError] = useState("");
@@ -46,10 +42,6 @@ function EditProduct() {
   const [subCategoryId, setSubCategoryId] = useState("");
   const [subCategoryError, setSubCategoryError] = useState("");
 
-  const [childrenCategory, setChildrenCategory] = useState([]);
-  const [childrenCategoryId, setChildrenCategoryId] = useState("");
-  const [childrenCategoryError, setChildrenCategoryError] = useState("");
-
   const [selectedImages, setSelectedImages] = useState([]);
   const [imageArr, setImageArr] = useState([]);
 
@@ -57,19 +49,26 @@ function EditProduct() {
   const [amountError, setAmountError] = useState("");
 
   const [skuInput, setSkuInput] = useState("");
-  const [colorInput, setColorInput] = useState("");
+
   const [description, setDescription] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [shortDesc, setShortDesc] = useState("");
   const [shortDescError, setShortDescError] = useState("");
 
-  const [moreProductId, setMoreProductId] = useState([]);
-  const [moreProductSelect, setMoreProductSelect] = useState([]);
-
   const [relatedProductId, setRelatedProductId] = useState([]);
   const [relatedProductSelect, setRelatedProductSelect] = useState([]);
 
-  const [additionalInfo, setAdditionalInfo] = useState("");
+  const [newArrival, setNewArrival] = useState(false);
+
+  const [imageInfo, setImageInfo] = useState({
+    imageName: "",
+    imageSize: "",
+    imageType: "",
+  });
+  const [thumbnailPhoto, setThumbnailPhoto] = useState("");
+  const [imageBase64Data, setImageBase64Data] = useState("");
+  const [thumbnailError, setThumbnailError] = useState("");
+
   const [fileKey, setFileKey] = useState(0);
 
   useEffect(() => {
@@ -194,29 +193,6 @@ function EditProduct() {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${baseUrl}/backend/color/all`,
-      auth: {
-        username: "user",
-        password: getToken,
-      },
-    };
-
-    axios
-      .request(config)
-      .then((response) => {
-        if ("success" in response.data) {
-          setColors(response.data.success.data);
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
-  }, []);
-
-  useEffect(() => {
-    let config = {
-      method: "get",
-      maxBodyLength: Infinity,
       url: `${baseUrl}/backend/product/all`,
       auth: {
         username: "user",
@@ -241,7 +217,6 @@ function EditProduct() {
             })
             .filter((el) => el !== undefined);
 
-          setMoreProduct(productUpdate);
           setRelatedProduct(productUpdate);
           // console.log("more, related => ", productUpdate);
         }
@@ -266,71 +241,36 @@ function EditProduct() {
       .request(config)
       .then((response) => {
         if ("success" in response.data) {
-          console.log("sumon", response.data.success.data[0]);
+          console.log("Edit", response.data.success.data[0]);
 
           setProductInput(response.data.success.data[0].title);
-
           setDefaultSelected(
             response.data.success.data[0].tagId.map((tag) => tag.tagName)
           );
-
           let tagData = response.data.success.data[0].tagId.map((tag) => {
             return { _id: tag._id };
           });
-
           setTagId(tagData);
 
-          // let categoryData = response.data.success.data[0].categoryId.map(
-          //   (cat) => {
-          //     return { _id: cat._id };
-          //   }
-          // );
-
-          // setDefaultCategories(
-          //   response.data.success.data[0].categoryId.map(
-          //     (cat) => cat.categoryName
-          //   )
-          // );
-
+          setThumbnailPhoto(response.data.success.data[0].thumbnails);
+          setNewArrival(response.data.success.data[0].newArrivals);
           setImageArr(response.data.success.data[0].imageArray);
-          setAdditionalInfo(response.data.success.data[0].additionalInfo);
           setDescription(response.data.success.data[0].description);
           setAmountInput(response.data.success.data[0].amount);
           setShortDesc(response.data.success.data[0].shortDesc);
           setSkuInput(response.data.success.data[0].sku);
           setProductInfo(response.data.success.data);
 
-          setColorInput(response.data.success.data[0].colorId?._id);
           setBrandInput(response.data.success.data[0].brandId?._id);
           setCapacityInput(response.data.success.data[0].capacityId?._id);
           setCategoryId(response.data.success.data[0].categoryId?._id);
           setSubCategoryId(response.data.success.data[0].subcategoryId?._id);
-          setChildrenCategoryId(
-            response.data.success.data[0]?.childrenCategory
-          );
         }
       })
       .catch((error) => {
         // console.log(error);
       });
-  }, []);
-
-  useEffect(() => {
-    if (moreProduct.length > 0 && productInfo.length > 0) {
-      let moreArr = moreProduct
-        .filter((el) => productInfo[0].moreProduct.includes(el._id))
-        .map((el) => el.value);
-
-      let selectedProduct = moreProduct
-        .filter((el) => productInfo[0].moreProduct.includes(el._id))
-        .map((el) => {
-          return { _id: el._id };
-        });
-
-      setMoreProductId(selectedProduct);
-      setMoreProductSelect(moreArr);
-    }
-  }, [moreProduct, productInfo]);
+  }, [dataRefetch]);
 
   useEffect(() => {
     if (relatedProduct.length > 0 && productInfo.length > 0) {
@@ -357,7 +297,6 @@ function EditProduct() {
 
       if (filterCat) {
         setSubCategories(filterCat.subCategoryId);
-        setChildrenCategory(filterCat.subCategoryId[0]?.childrenCategory);
       }
     }
   }, [categories, productInfo]);
@@ -390,15 +329,8 @@ function EditProduct() {
   };
 
   const handleChangeSubCategory = (e) => {
-    let subCatArr = subSategories.filter((el) => el._id == e.target.value);
-    setChildrenCategory(subCatArr[0].childrenCategory);
     setSubCategoryError("");
     setSubCategoryId(e.target.value);
-  };
-
-  const handleChangeChildrenCategory = (e) => {
-    setChildrenCategoryError("");
-    setChildrenCategoryId(e.target.value);
   };
 
   const handleInputFile = (event) => {
@@ -425,24 +357,6 @@ function EditProduct() {
     });
   };
 
-  const handleChangeMoreProduct = (value) => {
-    let selectedProduct = moreProduct
-      .filter((el) => value.includes(el.value))
-      .map((el) => {
-        return { _id: el._id };
-      });
-
-    setMoreProductId(selectedProduct);
-
-    setMoreProductSelect(
-      moreProduct
-        .filter((el) => value.includes(el.value))
-        .map((el) => {
-          return el.value;
-        })
-    );
-  };
-
   const handleChangeRelatedProduct = (value) => {
     let selectedProduct = relatedProduct
       .filter((el) => value.includes(el.value))
@@ -461,6 +375,34 @@ function EditProduct() {
     );
   };
 
+  const onChangeCheckbox = (e) => {
+    setNewArrival(e.target.checked);
+  };
+
+  const handleInputFileThumbnail = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64Data = e.target.result;
+        setImageBase64Data(base64Data);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    setImageInfo({
+      imageName: event.target.files[0].name,
+      imageSize: event.target.files[0].size,
+      imageType: event.target.files[0].type,
+    });
+    setThumbnailError("");
+  };
+
+  const handleDeleteImage = (info, productId) => { 
+    console.log(info, productId);
+  }
+
   const handleUpdateProduct = () => {
     if (productInput === "") {
       setProductError("This field is Required!");
@@ -468,8 +410,6 @@ function EditProduct() {
       setCategoryError("This field is Required!");
     } else if (subCategoryId === "") {
       setSubCategoryError("This field is Required!");
-    } else if (childrenCategoryId === "") {
-      setChildrenCategoryError("This field is Required!");
     } else if (tagId.length == 0) {
       setTagError("This field is Required!");
     } else if (amountInput == "") {
@@ -482,7 +422,6 @@ function EditProduct() {
       productInput !== "" &&
       categoryId !== "" &&
       subCategoryId !== "" &&
-      childrenCategoryId !== "" &&
       tagId.length > 0 &&
       amountInput !== "" &&
       shortDesc !== "" &&
@@ -508,20 +447,15 @@ function EditProduct() {
           sku: skuInput,
           categoryId: categoryId,
           subcategoryId: subCategoryId,
-          childrenCategory: childrenCategoryId,
           tagId,
           brandId: brandInput == "" ? null : brandInput,
-          colorId: colorInput == "" ? null : colorInput,
           capacityId: capacityInput == "" ? null : capacityInput,
           imageArray: selectedImages,
-          moreProduct: moreProductId,
           relatedProduct: relatedProductId,
-          additionalInfo,
         },
       };
 
-      // console.log("moreProductId =>", moreProductId);
-      // console.log("relatedProductId =>", categoryId, subCategoryId, childrenCategoryId);
+      // console.log("relatedProductId =>", categoryId, subCategoryId);
 
       setIsLoading(true);
       // return "ok";
@@ -534,7 +468,7 @@ function EditProduct() {
             setFileKey((prevKey) => prevKey + 1);
             setSelectedImages([]);
             setImageArr(response.data.success.data.imageArray);
-
+            setDataRefetch(!dataRefetch);
             toast.success(response.data.success.message, {
               position: "top-right",
               autoClose: 1500,
@@ -549,6 +483,7 @@ function EditProduct() {
             setIsLoading(false);
             setFileKey((prevKey) => prevKey + 1);
             setSelectedImages([]);
+            setDataRefetch(!dataRefetch);
 
             toast.error(response.data.error.message, {
               position: "top-right",
@@ -623,7 +558,7 @@ function EditProduct() {
               </div>
             </div>
 
-            <div className="row">
+            <div className="row changeRow">
               <div className="col-md-4 mt-3 form-group">
                 <select
                   onChange={handleChangeSubCategory}
@@ -644,34 +579,39 @@ function EditProduct() {
               </div>
 
               <div className="col-md-4 mt-3 form-group">
-                <select
-                  onChange={handleChangeChildrenCategory}
-                  value={childrenCategoryId}
-                  className="form-select"
-                >
-                  <option value="">All Children Category</option>
-                  {childrenCategory.map((option) => (
-                    <option key={option.link} value={option.link}>
-                      {option.title}
-                    </option>
-                  ))}
-                </select>
+                <div className="customBorder">
+                  <Image width={70} src={`${imageBaseURL}/${thumbnailPhoto}`} />
+                </div>
+                <input
+                  key={fileKey}
+                  name="brandLogo"
+                  className="form-control mt-1"
+                  onChange={handleInputFileThumbnail}
+                  type="file"
+                />
 
-                {childrenCategoryError && (
-                  <ErrorMessage message={childrenCategoryError} />
-                )}
+                {thumbnailError && <ErrorMessage message={thumbnailError} />}
               </div>
 
               <div className="col-md-4 mt-3 form-group">
-                <input type="text" className="form-control" disabled />
+                <Checkbox checked={newArrival} onChange={onChangeCheckbox}>
+                  Show In New Arrival
+                </Checkbox>
               </div>
             </div>
 
             <div className="row changeRow">
-              <div className="col-md-4 form-group mt-3">
+              <div className="col-md-4 form-group mt-4">
                 <div className="imageControll">
-                  {imageArr.map((el) => (
-                    <Image width={60} key={el} src={`${imageBaseURL}/${el}`} />
+                  {imageArr.map((el) => el.id !== 1 && (
+                    <Fragment key={el.id}>
+                      <Image
+                        width={60}
+                        className="customBorder"
+                        src={`${imageBaseURL}/${el.imageURL}`}
+                      />
+                      <MdDelete onClick={() => handleDeleteImage(el, id)} className="iconDeleteCustom" />
+                    </Fragment>
                   ))}
                 </div>
 
@@ -737,20 +677,6 @@ function EditProduct() {
                   style={{
                     width: "100%",
                   }}
-                  placeholder="More Product"
-                  value={moreProductSelect}
-                  onChange={handleChangeMoreProduct}
-                  options={moreProduct}
-                  optionRender={(option) => <Space>{option.data.label}</Space>}
-                />
-              </div>
-
-              <div className="col-md-4 form-group mt-3">
-                <Select
-                  mode="multiple"
-                  style={{
-                    width: "100%",
-                  }}
                   placeholder="Related Product"
                   value={relatedProductSelect}
                   onChange={handleChangeRelatedProduct}
@@ -758,9 +684,7 @@ function EditProduct() {
                   optionRender={(option) => <Space>{option.data.label}</Space>}
                 />
               </div>
-            </div>
 
-            <div className="row">
               <div className="col-md-4 form-group mt-3">
                 <input
                   type="text"
@@ -776,28 +700,14 @@ function EditProduct() {
 
                 {amountError && <ErrorMessage message={amountError} />}
               </div>
+            </div>
 
-              <div className="col-md-4 form-group mt-3">
-                <select
-                  name="colorId"
-                  onChange={(e) => setColorInput(e.target.value)}
-                  value={colorInput}
-                  className="form-select"
-                >
-                  <option value="">All Color</option>
-                  {colors.map((option) => (
-                    <option key={option._id} value={option._id}>
-                      {option.colorName.split(",")[0]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="col-md-4 form-group mt-3">
+            <div className="row">
+              <div className="col-md-12 form-group mt-3">
                 <textarea
                   className="form-control"
                   name="shortDesc"
-                  rows={1}
+                  rows={3}
                   value={shortDesc}
                   onChange={(e) => {
                     setShortDesc(e.target.value);
@@ -823,19 +733,6 @@ function EditProduct() {
               />
 
               {descriptionError && <ErrorMessage message={descriptionError} />}
-            </div>
-
-            <div className="form-group mt-3">
-              <textarea
-                className="form-control"
-                name="additionalInfo"
-                rows={5}
-                value={additionalInfo}
-                onChange={(e) => {
-                  setAdditionalInfo(e.target.value);
-                }}
-                placeholder="Additional Information"
-              />
             </div>
 
             <div className="mt-3">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Select, Space } from "antd";
+import { Card, Select, Space, Checkbox } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "./css/Brands.css";
@@ -18,6 +18,7 @@ function Product() {
   const [capacityInput, setCapacityInput] = useState("");
 
   const [brands, setBrands] = useState([]);
+
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
   const [categoryError, setCategoryError] = useState("");
@@ -26,10 +27,6 @@ function Product() {
   const [subCategoryId, setSubCategoryId] = useState("");
   const [subCategoryError, setSubCategoryError] = useState("");
 
-  const [childrenCategory, setChildrenCategory] = useState([]);
-  const [childrenCategoryId, setChildrenCategoryId] = useState("");
-  const [childrenCategoryError, setChildrenCategoryError] = useState("");
-
   const [capacity, setCapacity] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagId, setTagId] = useState([]);
@@ -37,21 +34,29 @@ function Product() {
   const [selectedImages, setSelectedImages] = useState([]);
   const [imageError, setImageError] = useState("");
   const [skuInput, setSkuInput] = useState("");
-  const [moreProduct, setMoreProduct] = useState([]);
-  const [moreProductId, setMoreProductId] = useState([]);
+
   const [relatedProduct, setRelatedProduct] = useState([]);
   const [relatedProductId, setRelatedProductId] = useState([]);
 
   const [amountInput, setAmountInput] = useState("");
   const [amountError, setAmountError] = useState("");
-  const [colors, setColors] = useState([]);
-  const [colorInput, setColorInput] = useState("");
+
   const [shortDesc, setShortDesc] = useState("");
   const [shortDescError, setShortDescError] = useState("");
 
   const [description, setDescription] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
-  const [additionalInfo, setAdditionalInfo] = useState("");
+
+  const [newArrival, setNewArrival] = useState(false);
+
+  const [imageInfo, setImageInfo] = useState({
+    imageName: "",
+    imageSize: "",
+    imageType: "",
+  });
+  const [imageBase64Data, setImageBase64Data] = useState("");
+  const [thumbnailError, setThumbnailError] = useState("");
+
   const [fileKey, setFileKey] = useState(0);
 
   useEffect(() => {
@@ -93,6 +98,7 @@ function Product() {
       .then((response) => {
         if ("success" in response.data) {
           setCategories(response.data.success.data);
+          // console.log("cat", response.data.success.data);
         }
       })
       .catch((error) => {
@@ -166,29 +172,6 @@ function Product() {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: `${baseUrl}/backend/color/all`,
-      auth: {
-        username: "user",
-        password: getToken,
-      },
-    };
-
-    axios
-      .request(config)
-      .then((response) => {
-        if ("success" in response.data) {
-          setColors(response.data.success.data);
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
-  }, []);
-
-  useEffect(() => {
-    let config = {
-      method: "get",
-      maxBodyLength: Infinity,
       url: `${baseUrl}/backend/product/all`,
       auth: {
         username: "user",
@@ -209,7 +192,6 @@ function Product() {
             };
           });
 
-          setMoreProduct(productUpdate);
           setRelatedProduct(productUpdate);
         }
       })
@@ -230,35 +212,15 @@ function Product() {
   };
 
   const handleChangeCategory = (e) => {
-    // let categoryTags = categories
-    //   .filter((el) => value.includes(el.value))
-    //   .map((cat) => {
-    //     return { _id: cat._id };
-    //   });
-
     let subCatArr = categories.filter((el) => el._id == e.target.value);
-
-    // subCategoryId
-    // console.log(e.target.value, subCatArr[0].subCategoryId);
-
     setSubCategories(subCatArr[0].subCategoryId);
-
     setCategoryError("");
     setCategoryId(e.target.value);
   };
 
   const handleChangeSubCategory = (e) => {
-    let subCatArr = subSategories.filter((el) => el._id == e.target.value);
-    // console.log(e.target.value, subCatArr[0].childrenCategory);
-
-    setChildrenCategory(subCatArr[0].childrenCategory);
     setSubCategoryError("");
     setSubCategoryId(e.target.value);
-  };
-
-  const handleChangeChildrenCategory = (e) => {
-    setChildrenCategoryError("");
-    setChildrenCategoryId(e.target.value);
   };
 
   const handleInputFile = (event) => {
@@ -287,14 +249,28 @@ function Product() {
     });
   };
 
-  const handleChangeMoreProduct = (value) => {
-    let selectedProduct = moreProduct
-      .filter((el) => value.includes(el.value))
-      .map((el) => {
-        return { _id: el._id };
-      });
+  const onChangeCheckbox = (e) => {
+    setNewArrival(e.target.checked);
+  };
 
-    setMoreProductId(selectedProduct);
+  const handleInputFileThumbnail = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64Data = e.target.result;
+        setImageBase64Data(base64Data);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    setImageInfo({
+      imageName: event.target.files[0].name,
+      imageSize: event.target.files[0].size,
+      imageType: event.target.files[0].type,
+    });
+    setThumbnailError("");
   };
 
   const handleChangeRelatedProduct = (value) => {
@@ -314,9 +290,11 @@ function Product() {
       setCategoryError("This field is Required!");
     } else if (subCategoryId === "") {
       setSubCategoryError("This field is Required!");
-    } else if (childrenCategoryId === "") {
-      setChildrenCategoryError("This field is Required!");
-    } else if (selectedImages.length == 0) {
+    } 
+    else if (imageInfo.imageName === "") {
+      setThumbnailError("This field is Required!");
+    } 
+    else if (selectedImages.length == 0) {
       setImageError("This field is Required!");
     } else if (tagId.length == 0) {
       setTagError("This field is Required!");
@@ -330,7 +308,7 @@ function Product() {
       productInput !== "" &&
       categoryId !== "" &&
       subCategoryId !== "" &&
-      childrenCategoryId !== "" &&
+      imageInfo.imageName !== "" &&
       selectedImages.length > 0 &&
       tagId.length > 0 &&
       amountInput !== "" &&
@@ -356,22 +334,19 @@ function Product() {
           sku: skuInput,
           categoryId: categoryId,
           subcategoryId: subCategoryId,
-          childrenCategory: childrenCategoryId,
           tagId,
           brandId: brandInput == "" ? null : brandInput,
-          colorId: colorInput == "" ? null : colorInput,
           capacityId: capacityInput == "" ? null : capacityInput,
+          thumbnails: {...imageInfo, imageBase64Data},
           imageArray: selectedImages,
-          moreProduct: moreProductId,
           relatedProduct: relatedProductId,
-          additionalInfo,
+          newArrivals: newArrival ? "active" : "inactive"
         },
       };
 
       setIsLoading(true);
 
       // console.log(categoryId);
-      // console.log("moreProductId", moreProductId);
       // console.log("relatedProductId", relatedProductId);
 
       // return "ok";
@@ -381,7 +356,6 @@ function Product() {
           if ("success" in response.data) {
             setIsLoading(false);
 
-            setFileKey((prevKey) => prevKey + 1);
             setProductInput("");
             setBrandInput("");
 
@@ -390,21 +364,27 @@ function Product() {
             setSubCategories([]);
             setSubCategoryId("");
             setSubCategoryError("");
-            setChildrenCategory([]);
-            setChildrenCategoryId("");
-            setChildrenCategoryError("");
+
+             setNewArrival(false);
+             setImageInfo({
+              imageName: "",
+              imageSize: "",
+              imageType: "",
+            });
+             setImageBase64Data("");
+             setThumbnailError("");
 
             setCapacityInput("");
             setAmountInput("");
-            setColorInput("");
             setShortDesc("");
             setDescription("");
-            setAdditionalInfo("");
+
             setTagId([]);
             setSelectedImages([]);
             setSkuInput("");
-            setMoreProductId([]);
             setRelatedProductId([]);
+
+            setFileKey((prevKey) => prevKey + 1);
 
             toast.success(response.data.success.message, {
               position: "top-right",
@@ -419,7 +399,6 @@ function Product() {
           } else {
             setIsLoading(false);
 
-            setFileKey((prevKey) => prevKey + 1);
             setProductInput("");
             setBrandInput("");
 
@@ -428,21 +407,26 @@ function Product() {
             setSubCategories([]);
             setSubCategoryId("");
             setSubCategoryError("");
-            setChildrenCategory([]);
-            setChildrenCategoryId("");
-            setChildrenCategoryError("");
 
             setCapacityInput("");
             setAmountInput("");
-            setColorInput("");
+            setNewArrival(false);
+            setImageInfo({
+             imageName: "",
+             imageSize: "",
+             imageType: "",
+           });
+            setImageBase64Data("");
+            setThumbnailError("");
+
             setShortDesc("");
             setDescription("");
-            setAdditionalInfo("");
+
             setTagId([]);
             setSelectedImages([]);
             setSkuInput("");
-            setMoreProductId([]);
             setRelatedProductId([]);
+            setFileKey((prevKey) => prevKey + 1);
 
             toast.error(response.data.error.message, {
               position: "top-right",
@@ -541,27 +525,21 @@ function Product() {
               </div>
 
               <div className="col-md-4 mt-3 form-group">
-                <select
-                  onChange={handleChangeChildrenCategory}
-                  value={childrenCategoryId}
+                <input
                   key={fileKey}
-                  className="form-select"
-                >
-                  <option value="">All Children Category</option>
-                  {childrenCategory.map((option) => (
-                    <option key={option.link} value={option.link}>
-                      {option.title}
-                    </option>
-                  ))}
-                </select>
+                  name="brandLogo"
+                  className="form-control"
+                  onChange={handleInputFileThumbnail}
+                  type="file"
+                />
 
-                {childrenCategoryError && (
-                  <ErrorMessage message={childrenCategoryError} />
-                )}
+                {thumbnailError && <ErrorMessage message={thumbnailError} />}
               </div>
 
               <div className="col-md-4 mt-3 form-group">
-                <input type="text" className="form-control" disabled />
+                <Checkbox checked={newArrival} onChange={onChangeCheckbox}>
+                  Show In New Arrival
+                </Checkbox>
               </div>
             </div>
 
@@ -630,20 +608,6 @@ function Product() {
                   style={{
                     width: "100%",
                   }}
-                  placeholder="More Product"
-                  key={fileKey}
-                  onChange={handleChangeMoreProduct}
-                  options={moreProduct}
-                  optionRender={(option) => <Space>{option.data.label}</Space>}
-                />
-              </div>
-
-              <div className="col-md-4 form-group mt-3">
-                <Select
-                  mode="multiple"
-                  style={{
-                    width: "100%",
-                  }}
                   placeholder="Related Product"
                   key={fileKey}
                   onChange={handleChangeRelatedProduct}
@@ -651,9 +615,6 @@ function Product() {
                   optionRender={(option) => <Space>{option.data.label}</Space>}
                 />
               </div>
-            </div>
-
-            <div className="row">
               <div className="col-md-4 form-group mt-3">
                 <input
                   type="text"
@@ -669,28 +630,14 @@ function Product() {
 
                 {amountError && <ErrorMessage message={amountError} />}
               </div>
+            </div>
 
-              <div className="col-md-4 form-group mt-3">
-                <select
-                  name="colorId"
-                  onChange={(e) => setColorInput(e.target.value)}
-                  value={colorInput}
-                  className="form-select"
-                >
-                  <option value="">All Color</option>
-                  {colors.map((option) => (
-                    <option key={option._id} value={option._id}>
-                      {option.colorName.split(",")[0]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="col-md-4 form-group mt-3">
+            <div className="row">
+              <div className="col-md-12 form-group mt-3">
                 <textarea
                   className="form-control"
                   name="shortDesc"
-                  rows={1}
+                  rows={3}
                   value={shortDesc}
                   onChange={(e) => {
                     setShortDesc(e.target.value);
@@ -716,19 +663,6 @@ function Product() {
               />
 
               {descriptionError && <ErrorMessage message={descriptionError} />}
-            </div>
-
-            <div className="form-group mt-3">
-              <textarea
-                className="form-control"
-                name="additionalInfo"
-                rows={5}
-                value={additionalInfo}
-                onChange={(e) => {
-                  setAdditionalInfo(e.target.value);
-                }}
-                placeholder="Additional Information"
-              />
             </div>
 
             <div className="mt-3">

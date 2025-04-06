@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card } from "antd";
+import { Card, Image } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "./css/Brands.css";
@@ -92,6 +92,63 @@ function Products() {
       });
   }, []);
 
+  const handleActiveArrival = (id) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${baseUrl}/backend/product/arrival`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      auth: {
+        username: "user",
+        password: postToken,
+      },
+      data: { id: id },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        if ("success" in response.data) {
+          let productUpdate = products.map((el) => {
+            if (el._id == id) {
+              let updateArrival =
+                el.newArrivals == "active" ? "inactive" : "active";
+              return { ...el, newArrivals: updateArrival };
+            }
+            return el;
+          });
+          setProducts(productUpdate);
+
+          toast.success(response.data.success.message, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        } else {
+          toast.error(response.data.error.message, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+      })
+      .catch((error) => {
+        // console.log(error);
+      });
+  };
+
   return (
     <Card title="All Product">
       <div>
@@ -110,6 +167,7 @@ function Products() {
                   <th>Price</th>
                   <th>SKU</th>
                   <th>Tags</th>
+                  <th>New Arrivals</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -120,13 +178,10 @@ function Products() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>
-                        <div style={{ width: "45px" }}>
-                          <img
-                            src={`${imageBaseURL}/${el.imageArray[0]}`}
-                            className="img-thumbnail"
-                            alt={el.imageArray[0]}
-                          />
-                        </div>
+                        <Image
+                          width={50}
+                          src={`${imageBaseURL}/${el.thumbnails}`}
+                        />
                       </td>
                       <td>{el.title}</td>
                       <td>
@@ -150,6 +205,24 @@ function Products() {
                       <td>${el.amount}</td>
                       <td>{el.sku ? el.sku : "Empty"}</td>
                       <td>{el.tagId.map((tag) => tag.tagName).join(", ")}</td>
+                      <td>
+                        {el.newArrivals == "active" ? (
+                          <span
+                            onClick={() => handleActiveArrival(el._id)}
+                            className="btn btn-sm btn-success"
+                          >
+                            Active
+                          </span>
+                        ) : (
+                          <span
+                            onClick={() => handleActiveArrival(el._id)}
+                            className="btn btn-sm btn-secondary"
+                          >
+                            InActive
+                          </span>
+                        )}
+                      </td>
+
                       <td>
                         {el.productStatus == "active" ? (
                           <span className="btn btn-sm btn-success">Active</span>
@@ -192,7 +265,7 @@ function Products() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={13} className="text-center">
+                    <td colSpan={14} className="text-center">
                       <h4>No data found on the Record.</h4>
                     </td>
                   </tr>

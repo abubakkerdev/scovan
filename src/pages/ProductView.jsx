@@ -48,15 +48,38 @@ function ProductView() {
                   <th>Title</th>
                   <td>{product?.title}</td>
                 </tr>
+
                 <tr>
                   <th>Thumbnail</th>
                   <td>
-                    <Image
-                      width={70}
-                      src={`${imageBaseURL}/${product?.imageArray?.[0]}`}
-                    />
+                    <div className="customBorder">
+                      <Image
+                        width={70}
+                        src={`${imageBaseURL}/${product?.thumbnails}`}
+                      />{" "}
+                    </div>
                   </td>
                 </tr>
+
+                <tr>
+                  <th>Product Photo</th>
+                  <td>
+                    <div className="dflexImage">
+                      {product?.imageArray?.map(
+                        (el) =>
+                          el.id !== 1 && (
+                            <span key={el.id}>
+                              <Image
+                                width={70}
+                                src={`${imageBaseURL}/${el.imageURL}`}
+                              />
+                            </span>
+                          )
+                      )}
+                    </div>
+                  </td>
+                </tr>
+
                 <tr>
                   <th>Amount</th>
                   <td>${product?.amount}</td>
@@ -77,14 +100,7 @@ function ProductView() {
                       : "Empty"}
                   </td>
                 </tr>
-                <tr>
-                  <th>Color</th>
-                  <td>
-                    {product?.colorId?.colorName
-                      ? product?.colorId?.colorName.split(",")[0]
-                      : "Empty"}
-                  </td>
-                </tr>
+
                 <tr>
                   <th>Capacity</th>
                   <td>
@@ -105,31 +121,9 @@ function ProductView() {
                 </tr>
 
                 <tr>
-                  <th>ChildCategory</th>
-                  <td>{product?.childrenCategory?.replace("/", "")}</td>
-                </tr>
-
-                <tr>
                   <th>Tags</th>
                   <td>
                     {product?.tagId?.map((tag) => tag.tagName).join(", ")}
-                  </td>
-                </tr>
-
-                <tr>
-                  <th>More Product</th>
-                  <td className="d-flex column-gap-3">
-                    {product?.moreProduct
-                      ? product?.moreProduct?.map((el, index) => (
-                          <div key={index}>
-                            <p>{el[0].title}</p>
-                            <Image
-                              width={70}
-                              src={`${imageBaseURL}/${el[0]?.imageArray?.[0]}`}
-                            />
-                          </div>
-                        ))
-                      : "Empty"}
                   </td>
                 </tr>
 
@@ -140,10 +134,12 @@ function ProductView() {
                       ? product?.relatedProduct?.map((el, index) => (
                           <div key={index}>
                             <p>{el[0].title}</p>
-                            <Image
-                              width={70}
-                              src={`${imageBaseURL}/${el[0]?.imageArray?.[0]}`}
-                            />
+                            <div className="customBorder">
+                              <Image
+                                width={70}
+                                src={`${imageBaseURL}/${el[0]?.imageArray?.[0].imageURL}`}
+                              />{" "}
+                            </div>
                           </div>
                         ))
                       : "Empty"}
@@ -154,15 +150,6 @@ function ProductView() {
                   <th>Description</th>
                   <td>
                     {product?.description ? product?.description : "Empty"}
-                  </td>
-                </tr>
-
-                <tr>
-                  <th>Additional Info</th>
-                  <td>
-                    {product?.additionalInfo
-                      ? product?.additionalInfo
-                      : "Empty"}
                   </td>
                 </tr>
               </thead>
