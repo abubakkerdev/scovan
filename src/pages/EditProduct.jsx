@@ -5,7 +5,7 @@ import { Card, Select, Space, Image, Checkbox } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "./css/Brands.css";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ErrorMessage from "../components/error/ErrorMessage";
 
 const postToken = import.meta.env.VITE_API_BACKEND_POST_TOKEN;
@@ -67,7 +67,6 @@ function EditProduct() {
   });
   const [thumbnailPhoto, setThumbnailPhoto] = useState("");
   const [imageBase64Data, setImageBase64Data] = useState("");
-  const [thumbnailError, setThumbnailError] = useState("");
 
   const [fileKey, setFileKey] = useState(0);
 
@@ -81,7 +80,7 @@ function EditProduct() {
         password: getToken,
       },
     };
-
+ 
     axios
       .request(config)
       .then((response) => {
@@ -94,7 +93,7 @@ function EditProduct() {
           //     desc: el.categoryName,
           //   };
           // });
-          console.log("one", response.data.success.data);
+          // console.log("one", response.data.success.data);
 
           setCategories(response.data.success.data);
         }
@@ -241,7 +240,7 @@ function EditProduct() {
       .request(config)
       .then((response) => {
         if ("success" in response.data) {
-          console.log("Edit", response.data.success.data[0]);
+          // console.log("Edit", response.data.success.data[0]);
 
           setProductInput(response.data.success.data[0].title);
           setDefaultSelected(
@@ -252,8 +251,10 @@ function EditProduct() {
           });
           setTagId(tagData);
 
+          let newArrivalsData =  response.data.success.data[0].newArrivals == "active" ? true : false;
+
           setThumbnailPhoto(response.data.success.data[0].thumbnails);
-          setNewArrival(response.data.success.data[0].newArrivals);
+          setNewArrival(newArrivalsData);
           setImageArr(response.data.success.data[0].imageArray);
           setDescription(response.data.success.data[0].description);
           setAmountInput(response.data.success.data[0].amount);
@@ -396,12 +397,47 @@ function EditProduct() {
       imageSize: event.target.files[0].size,
       imageType: event.target.files[0].type,
     });
-    setThumbnailError("");
   };
 
-  const handleDeleteImage = (info, productId) => { 
-    console.log(info, productId);
-  }
+  const handleDeleteImage = (info, productId) => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${baseUrl}/backend/product/image/update`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      auth: {
+        username: "user",
+        password: postToken,
+      },
+      data: {
+        id: productId,
+        info,
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        if ("success" in response.data) {
+          setImageArr(imageArr.filter((el) => el.id != info.id));
+          toast.success(response.data.success.message, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
+      })
+      .catch((error) => {
+        // console.log(error);
+      });
+  };
 
   const handleUpdateProduct = () => {
     if (productInput === "") {
@@ -450,8 +486,10 @@ function EditProduct() {
           tagId,
           brandId: brandInput == "" ? null : brandInput,
           capacityId: capacityInput == "" ? null : capacityInput,
+          thumbnails: { ...imageInfo, imageBase64Data },
           imageArray: selectedImages,
           relatedProduct: relatedProductId,
+          newArrivals: newArrival,
         },
       };
 
@@ -467,7 +505,13 @@ function EditProduct() {
             setIsLoading(false);
             setFileKey((prevKey) => prevKey + 1);
             setSelectedImages([]);
-            setImageArr(response.data.success.data.imageArray);
+            setImageInfo({
+              imageName: "",
+              imageSize: "",
+              imageType: "",
+            });
+            setImageBase64Data("");
+
             setDataRefetch(!dataRefetch);
             toast.success(response.data.success.message, {
               position: "top-right",
@@ -483,8 +527,14 @@ function EditProduct() {
             setIsLoading(false);
             setFileKey((prevKey) => prevKey + 1);
             setSelectedImages([]);
-            setDataRefetch(!dataRefetch);
+            setImageInfo({
+              imageName: "",
+              imageSize: "",
+              imageType: "",
+            });
+            setImageBase64Data("");
 
+            setDataRefetch(!dataRefetch);
             toast.error(response.data.error.message, {
               position: "top-right",
               autoClose: 1500,
@@ -589,8 +639,6 @@ function EditProduct() {
                   onChange={handleInputFileThumbnail}
                   type="file"
                 />
-
-                {thumbnailError && <ErrorMessage message={thumbnailError} />}
               </div>
 
               <div className="col-md-4 mt-3 form-group">
@@ -603,18 +651,23 @@ function EditProduct() {
             <div className="row changeRow">
               <div className="col-md-4 form-group mt-4">
                 <div className="imageControll">
-                  {imageArr.map((el) => el.id !== 1 && (
-                    <Fragment key={el.id}>
-                      <Image
-                        width={60}
-                        className="customBorder"
-                        src={`${imageBaseURL}/${el.imageURL}`}
-                      />
-                      <MdDelete onClick={() => handleDeleteImage(el, id)} className="iconDeleteCustom" />
-                    </Fragment>
-                  ))}
+                  {imageArr.map(
+                    (el) =>
+                      el.id !== 1 && (
+                        <Fragment key={el.id}>
+                          <Image
+                            width={60}
+                            className="customBorder"
+                            src={`${imageBaseURL}/${el.imageURL}`}
+                          />
+                          <MdDelete
+                            onClick={() => handleDeleteImage(el, id)}
+                            className="iconDeleteCustom"
+                          />
+                        </Fragment>
+                      )
+                  )}
                 </div>
-
                 <input
                   className="form-control"
                   type="file"

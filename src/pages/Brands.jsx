@@ -65,6 +65,33 @@ function Brands() {
       });
   }, []);
 
+  
+  // // delete
+  // useEffect(() => {
+  //   let config = {
+  //     method: "post",
+  //     maxBodyLength: Infinity,
+  //     url: `${baseUrl}/frontend/product/subcategory`,
+  //     auth: {
+  //       username: "user",
+  //       password: getToken,
+  //     },
+  //     data: {id: "67ef9514603ec250a9a34214"}
+  //   };
+
+  //   axios
+  //     .request(config)
+  //     .then((response) => {
+  //       if ("success" in response.data) {
+  //         console.log(response.data.success.data);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       // console.log(error);
+  //     });
+  // }, []);
+
+
   const handleInputFile = (event) => {
     const file = event.target.files[0];
 
@@ -318,36 +345,36 @@ function Brands() {
                 <tbody>
                   {brands.length !== 0 ? (
                     brands.map((brand, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{brand.brandName}</td>
-                          <td>
-                            <div className="thumbnail-change">
-                              <img
-                                src={`${imageBaseURL}/${brand.brandLogo}`}
-                                className="img-thumbnail"
-                                alt={brand.brandLogo}
-                              />
-                            </div>
-                          </td>
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{brand.brandName}</td>
+                        <td>
+                          <div className="thumbnail-change">
+                            <img
+                              src={`${imageBaseURL}/${brand.brandLogo}`}
+                              className="img-thumbnail"
+                              alt={brand.brandLogo}
+                            />
+                          </div>
+                        </td>
 
-                          <td>
-                            <div
-                              role="group"
-                              className="btn-group btn-group-sm commonBtn"
+                        <td>
+                          <div
+                            role="group"
+                            className="btn-group btn-group-sm commonBtn"
+                          >
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              data-bs-toggle="modal"
+                              onClick={() => setId(brand)}
+                              data-bs-target="#exampleModal"
                             >
-                              <button
-                                type="button"
-                                className="btn btn-danger"
-                                data-bs-toggle="modal"
-                                onClick={() => setId(brand)}
-                                data-bs-target="#exampleModal"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
                     ))
                   ) : (
                     <tr>
