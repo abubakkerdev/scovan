@@ -65,31 +65,32 @@ function Brands() {
       });
   }, []);
 
-  
-  // // delete
-  // useEffect(() => {
-  //   let config = {
-  //     method: "post",
-  //     maxBodyLength: Infinity,
-  //     url: `${baseUrl}/frontend/product/subcategory`,
-  //     auth: {
-  //       username: "user",
-  //       password: getToken,
-  //     },
-  //     data: {id: "67ef9514603ec250a9a34214"}
-  //   };
 
-  //   axios
-  //     .request(config)
-  //     .then((response) => {
-  //       if ("success" in response.data) {
-  //         console.log(response.data.success.data);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       // console.log(error);
-  //     });
-  // }, []);
+  // delete
+  useEffect(() => {
+    let config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `${baseUrl}/frontend/product/subcategory`,
+      auth: {
+        username: "user",
+        password: postToken,
+      },
+      data: { id: "67ef9514603ec250a9a34214" },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        if ("success" in response.data) {
+          console.log(response.data.success.data);
+        }
+      })
+      .catch((error) => {
+        // console.log(error);
+      });
+  }, []);
+
 
 
   const handleInputFile = (event) => {
