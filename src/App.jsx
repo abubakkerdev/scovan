@@ -29,7 +29,10 @@ import SubCategory from "./pages/SubCategory";
 import Testimonial from "./pages/Testimonial";
 import Coupon from "./pages/Coupon";
 import CouponAll from "./pages/CouponAll";
-
+import ReviewAdd from "./pages/ReviewAdd";
+import Reviews from "./pages/Reviews";
+import ReviewEdit from "./pages/ReviewEdit";
+ 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -45,7 +48,10 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/testimonial" element={<Testimonial />} />
           <Route path="/addcoupon" element={<Coupon />} />
+          <Route path="/addreview" element={<ReviewAdd />} />
+          <Route path="/reviews" element={<Reviews />} />
           <Route path="/coupon" element={<CouponAll />} />
+          <Route path="/review/edit/:id" element={<ReviewEdit />} />
           <Route path="/product/edit/:id" element={<EditProduct />} />
           <Route path="/product/view/:id" element={<ProductView />} />
           <Route path="/order" element={<Order />} />

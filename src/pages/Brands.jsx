@@ -65,33 +65,31 @@ function Brands() {
       });
   }, []);
 
-
   // delete
-  useEffect(() => {
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${baseUrl}/frontend/product/subcategory`,
-      auth: {
-        username: "user",
-        password: postToken,
-      },
-      data: { id: "67ef9514603ec250a9a34214" },
-    };
+  // useEffect(() => {
+  //   let config = {
+  //     method: "get",
+  //     maxBodyLength: Infinity,
+  //     url: `${baseUrl}/frontend/product/subcategory`,
+  //     // url: `http://localhost:1010/api/v1/frontend/product/view/67f22189610b76eb6cd27b5a`,
+  //     auth: {
+  //       username: "user",
+  //       password: postToken,
+  //     },
+  //     data: { id: "67ef9514603ec250a9a34214" },
+  //   };
 
-    axios
-      .request(config)
-      .then((response) => {
-        if ("success" in response.data) {
-          console.log(response.data.success.data);
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
-  }, []);
-
-
+  //   axios
+  //     .request(config)
+  //     .then((response) => {
+  //       if ("success" in response.data) {
+  //         console.log(response.data.success.data);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       // console.log(error);
+  //     });
+  // }, []);
 
   const handleInputFile = (event) => {
     const file = event.target.files[0];
@@ -113,7 +111,7 @@ function Brands() {
     });
     setBrandInputError({ ...brandInputError, brandLogo: "" });
   };
-
+ 
   const handleAddBrand = () => {
     if (brandInput.brandName == "") {
       setBrandInputError({

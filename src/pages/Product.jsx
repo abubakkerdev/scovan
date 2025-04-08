@@ -570,7 +570,7 @@ function Product() {
                   ))}
                 </select>
               </div>
-
+ 
               <div className="col-md-4 form-group mt-3">
                 <Select
                   mode="multiple"

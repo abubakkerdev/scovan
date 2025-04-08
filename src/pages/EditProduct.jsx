@@ -80,7 +80,7 @@ function EditProduct() {
         password: getToken,
       },
     };
- 
+
     axios
       .request(config)
       .then((response) => {
@@ -251,7 +251,10 @@ function EditProduct() {
           });
           setTagId(tagData);
 
-          let newArrivalsData =  response.data.success.data[0].newArrivals == "active" ? true : false;
+          let newArrivalsData =
+            response.data.success.data[0].newArrivals == "active"
+              ? true
+              : false;
 
           setThumbnailPhoto(response.data.success.data[0].thumbnails);
           setNewArrival(newArrivalsData);
