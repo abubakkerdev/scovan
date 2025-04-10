@@ -32,7 +32,8 @@ import CouponAll from "./pages/CouponAll";
 import ReviewAdd from "./pages/ReviewAdd";
 import Reviews from "./pages/Reviews";
 import ReviewEdit from "./pages/ReviewEdit";
- 
+import Banner from "./pages/Banner";
+  
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -50,6 +51,7 @@ function App() {
           <Route path="/addcoupon" element={<Coupon />} />
           <Route path="/addreview" element={<ReviewAdd />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/banner" element={<Banner />} />
           <Route path="/coupon" element={<CouponAll />} />
           <Route path="/review/edit/:id" element={<ReviewEdit />} />
           <Route path="/product/edit/:id" element={<EditProduct />} />
@@ -61,8 +63,8 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/registrar" element={<Registration />} />
-        <Route path="/emailconfirm" element={<EmailConfirm />} />
-        <Route path="/forgot-error" element={<ForgotError />} />
+        {/* <Route path="/emailconfirm" element={<EmailConfirm />} />
+        <Route path="/forgot-error" element={<ForgotError />} /> */}
 
         {/* 
              <Route path="/forgot" element={<Forgot />} />
