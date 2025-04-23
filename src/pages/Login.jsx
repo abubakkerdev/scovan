@@ -38,36 +38,6 @@ function Login() {
   const [iconToggle, setIconToggle] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-
-  // Delete File Now
-  const fetchProperty = async () => {
-    try {
-      const response = await axios.get('https://properties.e-agents.cloud/api/v1/properties/1083025', {
-        headers: {
-          'X-Token-Key': '3e50bd77-2ff6-45ae-ad5e-ca2179e6e21a'
-        }
-      });
-  
-      console.log('Property Data:', response.data);
-    } catch (error) {
-      console.error('Error fetching property:', error);
-    }
-  };
-
-
-  useEffect(() => {
-    console.log("Use Effect Data Run");
-    
-    fetchProperty();
-  }, []);
-
-  // Delete File Now
-
-
-
-
-
-
   const handleChange = (el) => {
     let { name, value } = el.target;
     setErrorMessage("");
