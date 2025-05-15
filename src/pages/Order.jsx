@@ -3,6 +3,7 @@ import { Card } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { HiOutlineRefresh } from "react-icons/hi";
+import { TbCurrencyTaka } from "react-icons/tb";
 import "./css/Brands.css";
 
 const postToken = import.meta.env.VITE_API_BACKEND_POST_TOKEN;
@@ -16,7 +17,7 @@ function Order() {
   const [refetchData, setRefetchData] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2; // Show 2 items per page
+  const itemsPerPage = 25; // Show 25 items per page
 
   const handleDelete = () => {
     let config = {
@@ -72,64 +73,7 @@ function Order() {
       });
   };
 
-  const handleAddDelete = () => {
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${baseUrl}/backend/order/store`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      auth: {
-        username: "user",
-        password: postToken,
-      },
-      data: {
-        uname: "IIT",
-        phone: "01653623726",
-        city: "Dhaka",
-        area: "Demo",
-        address: "Demo",
-        email: "info@gmail.com",
-        orderNotes: "",
-        shippingCharge: "100",
-        shippingMethod: "Outside Dhaka",
-
-        productInfo: [
-          {
-            id: "67e2c2911d80ea3c33f71801",
-            title: "Demo Title 3",
-            price: 100,
-            quantity: 4,
-          },
-          {
-            id: "67e2c2911d80ea3c33f79635",
-            title: "Demo Title 4",
-            price: 100,
-            quantity: 7,
-          },
-        ],
-        totalAmount: 5060,
-        discountAmount: "0",
-        paymentGateway: "Cash On",
-        amount: 5060,
-        userId: null,
-      },
-    };
-
-    axios
-      .request(config)
-      .then((response) => {
-        if ("success" in response.data) {
-          console.log(response.data.success.data);
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
-  };
-
-  const handleOrderUpdate = (id) => {
+  const handleOrderUpdate = (id, orderStatusId) => {
     let config = {
       method: "post",
       maxBodyLength: Infinity,
@@ -141,7 +85,7 @@ function Order() {
         username: "user",
         password: postToken,
       },
-      data: { id: id, orderStatus: "2" },
+      data: { id: id, orderStatus: orderStatusId },
     };
 
     axios
@@ -150,7 +94,7 @@ function Order() {
         if ("success" in response.data) {
           let orderUpdate = orders.map((el) => {
             if (el._id == id) {
-              return { ...el, orderStatus: "2" };
+              return { ...el, orderStatus: orderStatusId };
             }
             return el;
           });
@@ -285,7 +229,20 @@ function Order() {
                       <td>{el.area}</td>
                       <td>{el.address}</td>
                       <td>{el.orderNotes ? el.orderNotes : "Empty"}</td>
-                      <td>{el.shippingCharge}</td>
+                      <td>
+                        <div className="alignPrice">
+                          {el.shippingCharge.split("$")[1] ? (
+                            <>
+                              {Number(el.shippingCharge.split("$")[1]).toFixed(
+                                2
+                              )}
+                              <TbCurrencyTaka className="cfont-size" />
+                            </>
+                          ) : (
+                            el.shippingCharge
+                          )}
+                        </div>
+                      </td>
                       <td>{el.shippingMethod}</td>
                       <td>{el.paymentGateway}</td>
                       <td>
@@ -294,15 +251,36 @@ function Order() {
                             <div key={product.id}>
                               <div>
                                 {product.title} (Quantity: {product.quantity}){" "}
-                                <br />${product.price}
+                                <br />
+                                <div className="alignPrice">
+                                  {Number(product.price).toFixed(2)}
+                                  <TbCurrencyTaka className="cfont-size" />
+                                </div>
                               </div>
                               {ind !== el.productInfo.length - 1 && <br />}
                             </div>
                           ))}
                       </td>
-                      <td>${el.totalAmount}</td>
-                      <td>${el.discountAmount}</td>
-                      <td>${el.amount}</td>
+
+                      <td>
+                        <div className="alignPrice">
+                          {Number(el.totalAmount).toFixed(2)}
+                          <TbCurrencyTaka className="cfont-size" />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="alignPrice">
+                          {Number(el.discountAmount).toFixed(2)}
+                          <TbCurrencyTaka className="cfont-size" />
+                        </div>
+                      </td>
+                      <td>
+                        <div className="alignPrice">
+                          {Number(el.amount).toFixed(2)}
+                          <TbCurrencyTaka className="cfont-size" />
+                        </div>
+                      </td>
+
                       <td>{el.userId ? el.userId.uname : "Empty"}</td>
                       <td>
                         {el.orderStatus == "1" ? (
@@ -311,7 +289,7 @@ function Order() {
                             className="btn-group btn-group-sm commonBtn"
                           >
                             <button
-                              onClick={() => handleOrderUpdate(el._id)}
+                              onClick={() => handleOrderUpdate(el._id, "2")}
                               className="btn btn-primary"
                             >
                               Accept
@@ -327,9 +305,40 @@ function Order() {
                               Reject
                             </button>
                           </div>
+                        ) : el.orderStatus == "2" ? (
+                          <div
+                            role="group"
+                            className="btn-group btn-group-sm commonBtn"
+                          >
+                            <button
+                              onClick={() => handleOrderUpdate(el._id, "3")}
+                              className="btn btn-primary"
+                            >
+                              Deliver
+                            </button>
+
+                            <button
+                              onClick={() => handleOrderUpdate(el._id, "4")}
+                              className="btn btn-danger"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         ) : (
-                          <button className="btn btn-sm btn-primary">
-                            Accepted
+                          <button
+                            className={`btn btn-sm  ${
+                              el.orderStatus == "3"
+                                ? "btn-primary"
+                                : el.orderStatus == "4"
+                                ? "btn-danger"
+                                : ""
+                            }`}
+                          >
+                            {el.orderStatus == "3"
+                              ? "Delivered"
+                              : el.orderStatus == "4"
+                              ? "Canceled"
+                              : ""}
                           </button>
                         )}
                       </td>
@@ -371,14 +380,6 @@ function Order() {
                 </button>
               </div>
             )}
-
-            {/* <button
-              type="button"
-              onClick={handleAddDelete}
-              className="btn btn-danger"
-            >
-              Add Data
-            </button> */}
 
             <div
               className="modal fade"

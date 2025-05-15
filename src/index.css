@@ -3,10 +3,11 @@
   padding: 0;
 }
 body {
-  background-color: #F7FCFC !important;
+  background-color: #f7fcfc !important;
 }
-.Toastify, .commonColor {
-  background-color: #F7FCFC !important;
+.Toastify,
+.commonColor {
+  background-color: #f7fcfc !important;
 }
 
 .commonHeight {
@@ -140,4 +141,17 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .customer-errorbtnEdit:hover {
   color: white;
+}
+.alignPrice {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.alignPricet {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.cfont-size {
+  font-size: 16px;
 }

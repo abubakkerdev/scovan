@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "./css/Brands.css";
 import { Link } from "react-router-dom";
+import { TbCurrencyTaka } from "react-icons/tb";
 
 const postToken = import.meta.env.VITE_API_BACKEND_POST_TOKEN;
 const getToken = import.meta.env.VITE_API_BACKEND_GET_TOKEN;
@@ -202,7 +203,12 @@ function Products() {
                           ? el.capacityId?.capacityName
                           : "Empty"}
                       </td>
-                      <td>${el.amount}</td>
+                      <td>
+                        <div className="alignPrice">
+                          {Number(el.amount).toFixed(2)}
+                          <TbCurrencyTaka className="cfont-size" />
+                        </div>
+                      </td>
                       <td>{el.sku ? el.sku : "Empty"}</td>
                       <td>{el.tagId.map((tag) => tag.tagName).join(", ")}</td>
                       <td>

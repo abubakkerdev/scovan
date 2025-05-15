@@ -202,7 +202,7 @@ function Coupon() {
                 >
                   <option value="">Discount Type</option>
                   <option value="Percentage">Percentage Discount (%)</option>
-                  <option value="Fixed">Fixed discount ($)</option>
+                  <option value="Fixed">Fixed discount (৳)</option>
                 </select>
 
                 {discountTypeError && (

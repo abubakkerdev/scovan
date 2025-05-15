@@ -182,7 +182,7 @@ function Login() {
             </div>
 
             <div className="form-link">
-              <Link to="/forgot" className="forgot-pass">
+              <Link to="/login" className="forgot-pass">
                 Forgot password?
               </Link>
             </div>

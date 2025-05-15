@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { TbCurrencyTaka } from "react-icons/tb";
 import "./css/Brands.css";
 import dayjs from "dayjs";
 
@@ -90,48 +91,6 @@ function CouponAll() {
         // console.log(error);
       });
   }, []);
- 
-  const handleClickCoupon = () => {
-    let config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `${baseUrl}/backend/coupon/check`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      auth: {
-        username: "user",
-        password: postToken,
-      },
-      data: {
-        couponCode: "checkCoupon2",
-        amount: 4000,
-        shippingCharge: 60,
-      },
-    };
-
-    axios
-      .request(config)
-      .then((response) => {
- 
-        console.log("api", response.data);
-
-        toast.success(response.data.success.message, {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-
-      })
-      .catch((error) => {
-        // console.log(error);
-      });
-  };
 
   return (
     <Card title="All Coupon">
@@ -161,15 +120,30 @@ function CouponAll() {
                       <td>{el.discountType}</td>
                       <td>{el.shippingCharge}</td>
                       <td>
-                        {el.discountType == "Percentage"
-                          ? `${el.discountRate}%`
-                          : `$${el.discountRate}`}{" "}
+                        {el.discountType == "Percentage" ? (
+                          `${el.discountRate}%`
+                        ) : (
+                          <div className="alignPricet">
+                            {Number(el.discountRate).toFixed(2)}
+                            <TbCurrencyTaka className="cfont-size" />
+                          </div>
+                        )}
                       </td>
-                      <td>${el.minimumShopping}</td>
                       <td>
-                        {el.maximumDiscount == 1
-                          ? "Empty"
-                          : `$${el.maximumDiscount}`}
+                        <div className="alignPricet">
+                          {Number(el.minimumShopping).toFixed(2)}
+                          <TbCurrencyTaka className="cfont-size" />
+                        </div>
+                      </td>
+                      <td>
+                        {el.maximumDiscount == 1 ? (
+                          "Empty"
+                        ) : (
+                          <div className="alignPricet">
+                            {Number(el.maximumDiscount).toFixed(2)}
+                            <TbCurrencyTaka className="cfont-size" />
+                          </div>
+                        )}
                       </td>
                       <td>
                         {dayjs(el.expiredDate).format("YYYY-MM-DD HH:mm:ss")}{" "}
@@ -196,14 +170,6 @@ function CouponAll() {
                 )}
               </tbody>
             </table>
-
-            <button
-              type="button"
-              onClick={handleClickCoupon}
-              className="btn btn-danger"
-            >
-              Check Coupon
-            </button>
 
             <div
               className="modal fade"

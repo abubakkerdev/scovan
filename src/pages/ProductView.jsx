@@ -3,6 +3,7 @@ import { Card, Image } from "antd";
 import axios from "axios";
 import "./css/Brands.css";
 import { Link, useParams } from "react-router-dom";
+import { TbCurrencyTaka } from "react-icons/tb";
 
 const getToken = import.meta.env.VITE_API_BACKEND_GET_TOKEN;
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
@@ -82,7 +83,12 @@ function ProductView() {
 
                 <tr>
                   <th>Amount</th>
-                  <td>${product?.amount}</td>
+                  <td>
+                    <div className="alignPricet">
+                      {Number(product?.amount).toFixed(2)}
+                      <TbCurrencyTaka className="cfont-size" />
+                    </div>
+                  </td>
                 </tr>
                 <tr>
                   <th>SKU</th>
